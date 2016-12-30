@@ -1,7 +1,7 @@
 package skeletor.Food;
 
-import Enums.E_KategoriaPosiłku;
-import Enums.E_RodzajCiasta;
+import skeletor.Enums.E_KategoriaPosiłku;
+import skeletor.Enums.E_RodzajCiasta;
 
 /**
  * Created by Jarek on 2016-12-02.

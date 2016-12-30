@@ -1,6 +1,6 @@
 package skeletor.Food;
 
-import Enums.E_KategoriaPosiłku;
+import skeletor.Enums.E_KategoriaPosiłku;
 
 /**
  * Created by Jarek on 2016-12-02.

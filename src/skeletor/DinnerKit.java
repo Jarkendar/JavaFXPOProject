@@ -1,6 +1,6 @@
 package skeletor;
 
-import Food.*;
+import skeletor.Food.*;
 /**
  * Created by Jarek on 2016-12-02.
  */

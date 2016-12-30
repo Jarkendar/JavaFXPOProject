@@ -14,7 +14,6 @@ public class Regular extends Client {
      * @param name
      * @param surname
      * @param code
-     * @param time_order
      * @param address
      * @param loyal_points - punkty lojalnościowe
      */
