@@ -1,6 +1,9 @@
 package skeletor;
 
 import skeletor.Food.*;
+
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
@@ -22,10 +25,10 @@ public class DinnerKit {
      * Metoda oblicza cenę zestawu na podstawie cen posiłków
      * @return - zwraca cenę całego zestawu
      */
-    public double calculateKitPrice(){
-        double price = 0;
+    public BigDecimal calculateKitPrice(){
+        BigDecimal price = new BigDecimal(0);
         for (Meal x: this.meal_list) {
-            price += x.getPrice();
+            price.add(x.getPrice());
         }
         return price;
     }

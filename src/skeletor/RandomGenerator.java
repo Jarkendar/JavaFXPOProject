@@ -1,9 +1,10 @@
 package skeletor;
 
-import skeletor.Enums.E_Dni;
-import skeletor.Enums.E_Uprawnienia;
+import skeletor.Enums.*;
+import skeletor.Food.*;
 import skeletor.Person.*;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.Random;
@@ -19,6 +20,167 @@ public class RandomGenerator {
         orders = 0;
     }
 
+    //todo wyświetlanie stworzonej listy posiłków dla sprawdzenia poprawności generowania
+
+    /**
+     * Metoda generuje losowe posiłki i dodaje je na koniec listy wejsciowej.
+     * @param meals lista posiłków
+     */
+    public void addRandomMeal (LinkedList<Meal> meals){
+        Meal meal = null;
+        Random random = new Random(System.currentTimeMillis());
+        //tworzenie nazwy
+        String nameMeal = generateMealName(random.nextInt(15)+10);
+        //tworzenie listy składników
+        int number_of_components = 0;
+        number_of_components = random.nextInt(12)+3;
+        String[] components = new String[number_of_components];
+        for (int i =0; i<number_of_components; i++){
+            String tmp = generateMealName(random.nextInt(15)+5);
+            components[i] = tmp;
+        }
+        //tworzenie ceny
+        int tmp_price = random.nextInt(30)+10;
+        String tmp = tmp_price + ".99";
+        BigDecimal price = new BigDecimal(tmp);
+        System.out.println(price);
+        //tworzenie wagi
+        float weight = random.nextFloat()*10+1;
+        //tworzenie czasu przygotowania
+        long timePrepararation = random.nextInt(60)+1;
+
+        E_KategoriaPosiłku category = null;
+        int btmp = random.nextInt(3);
+        switch (btmp){
+            case 0:{
+                category = E_KategoriaPosiłku.pizza;
+                break;
+            }
+            case 1:{
+                category = E_KategoriaPosiłku.makaron;
+                break;
+            }
+            case 2:{
+                category = E_KategoriaPosiłku.deser;
+                break;
+            }
+        }
+
+        switch (category){
+            case pizza:{
+                boolean pizza_size = random.nextBoolean();
+                int choose = random.nextInt(3);
+                switch (choose){
+                    case 0:{
+                        meal = new Margheritta("pizzam "+nameMeal, components, price, weight, category, timePrepararation, pizza_size);
+                        break;
+                    }
+                    case 1:{
+                        meal = new Hawaiian("pizzah "+nameMeal, components, price, weight, category, timePrepararation, pizza_size);
+                        break;
+                    }
+                    case 2:{
+                        meal = new Salami("pizzas "+nameMeal, components, price, weight, category, timePrepararation, pizza_size);
+                        break;
+                    }
+                }
+                break;
+            }
+            case makaron:{
+                int choose = random.nextInt(2);
+                switch (choose){
+                    case 0:{
+                        meal = new Spaghetti("spaghetti "+nameMeal, components, price, weight, category, timePrepararation);
+                        break;
+                    }
+                    case 1:{
+                        meal = new Lasagne("lasagne "+nameMeal, components, price, weight, category, timePrepararation);
+                        break;
+                    }
+                }
+                break;
+            }
+            case deser:{
+                int choose = random.nextInt(2);
+                switch (choose){
+                    case 0:{
+                        E_RodzajCiasta cake_type = null;
+                        int c = random.nextInt(3);
+                        switch (c){
+                            case 0:{
+                                cake_type = E_RodzajCiasta.Czekoladowe;
+                                break;
+                            }
+                            case 1:{
+                                cake_type = E_RodzajCiasta.Waniliowe;
+                                break;
+                            }
+                            case 2:{
+                                cake_type = E_RodzajCiasta.Truskawkowe;
+                                break;
+                            }
+                        }
+                        meal = new Cake("ciasto "+nameMeal,components,price,weight,category,timePrepararation,cake_type);
+                        break;
+                    }
+                    case 1:{
+                        E_Dodatki addition = null;
+                        int c = random.nextInt(6);
+                        switch (c) {
+                            case 0: {
+                                addition = E_Dodatki.jabłka;
+                                break;
+                            }
+                            case 1: {
+                                addition = E_Dodatki.dżem;
+                                break;
+                            }
+                            case 2: {
+                                addition = E_Dodatki.ser;
+                                break;
+                            }
+                            case 3: {
+                                addition = E_Dodatki.cukier;
+                                break;
+                            }
+                            case 4: {
+                                addition = E_Dodatki.czekolada;
+                                break;
+                            }
+                            case 5: {
+                                addition = E_Dodatki.truskawki;
+                                break;
+                            }
+                        }
+                        meal = new Pancake("naleśniki "+nameMeal,components,price,weight,category,timePrepararation,addition);
+                        break;
+                    }
+                }
+            }
+        }
+        if (meal != null) {
+            meals.addLast(meal);
+        }
+    }
+
+    private String generateMealName(int lenght){
+        Random random = new Random(System.currentTimeMillis());
+        String name = "";
+        for (int i = 0; i<lenght; i++){
+            char sign = (char) (random.nextInt(57) + 65);
+            name += sign;
+        }
+        return name;
+    }
+
+    /**
+     * Metoda przydziela niepowtarzalne numery zamówienia.
+     * @return - numer zamówienia
+     */
+    synchronized
+    public long getOrdersNumber(){
+        return orders++;
+    }
 
     /**
      * Metoda wyświetla wszystkich dostawców z listy.
@@ -346,8 +508,8 @@ public class RandomGenerator {
      */
     private String generateAddress(){
         Random random = new Random(System.currentTimeMillis());
-        int x = random.nextInt(100);
-        int y = random.nextInt(100);
+        int x = random.nextInt(900);
+        int y = random.nextInt(750);
         return (x +":"+y);
     }
 
@@ -362,15 +524,6 @@ public class RandomGenerator {
             code=code*10+random.nextInt(10);
         }
         return code;
-    }
-
-    /**
-     * Metoda przydziela niepowtarzalne numery zamówienia.
-     * @return - numer zamówienia
-     */
-    synchronized
-    private long getOrdersNumber(){
-        return orders++;
     }
 
     /**

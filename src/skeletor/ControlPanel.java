@@ -1,6 +1,7 @@
 package skeletor;
 
 
+import skeletor.Food.Meal;
 import skeletor.Person.*;
 
 import java.util.LinkedList;
@@ -15,6 +16,7 @@ public class ControlPanel {
     public static void main(String[] args) {
         LinkedList<Client> clients_list = new LinkedList<>();
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
+        LinkedList<Meal> meals_list = new LinkedList<>();
         RandomGenerator randomGenerator = new RandomGenerator();
 
 
@@ -31,6 +33,15 @@ public class ControlPanel {
 
         for (int i = 0; i<10; i++){
             randomGenerator.addRandomDeliverer(deliverers_list);
+            try{
+                sleep(1);
+            }catch (InterruptedException e){
+                System.out.println(e);
+            }
+        }
+
+        for (int i = 0; i<10; i++){
+            randomGenerator.addRandomMeal(meals_list);
             try{
                 sleep(1);
             }catch (InterruptedException e){

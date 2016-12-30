@@ -3,6 +3,8 @@ package skeletor.Food;
 import skeletor.Enums.E_KategoriaPosiłku;
 import skeletor.Enums.E_RodzajCiasta;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
@@ -20,7 +22,7 @@ public class Cake extends Dessert {
      * @param cake_type - rodzaj ciasta
      */
     public Cake(String name, String[] components,
-                double price, float weight,
+                BigDecimal price, float weight,
                 E_KategoriaPosiłku category,
                 long preparation_time,
                 E_RodzajCiasta cake_type) {

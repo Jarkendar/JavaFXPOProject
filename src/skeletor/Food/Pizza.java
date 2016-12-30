@@ -2,6 +2,8 @@ package skeletor.Food;
 
 import skeletor.Enums.E_KategoriaPosiłku;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
@@ -19,7 +21,7 @@ public abstract class Pizza extends Meal {
      * @param size_big - rozmiar true=duża, false=mała
      */
     public Pizza(String name, String[] components,
-                 double price, float weight,
+                 BigDecimal price, float weight,
                  E_KategoriaPosiłku category,
                  long preparation_time, boolean size_big) {
         super(name, components, price,

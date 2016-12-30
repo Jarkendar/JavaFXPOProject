@@ -1,5 +1,7 @@
 package skeletor;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
@@ -29,10 +31,10 @@ public class Order {
      * cen zestawów
      * @return - zwraca cenę zmaówienia
      */
-    public double calculateOrderPrice(){
-        double order_price = 0;
+    public BigDecimal calculateOrderPrice(){
+        BigDecimal order_price = new BigDecimal(0);
         for (DinnerKit x: this.kit_list) {
-            order_price += x.calculateKitPrice();
+            order_price.add(x.calculateKitPrice());
         }
         return order_price;
     }

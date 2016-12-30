@@ -2,13 +2,15 @@ package skeletor.Food;
 
 import skeletor.Enums.E_KategoriaPosiłku;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
 public abstract class Meal {
     private String name;
     private String[] components;
-    private double price;
+    private BigDecimal price;
     private float weight;
     private E_KategoriaPosiłku category;
     private long preparation_time;
@@ -23,7 +25,7 @@ public abstract class Meal {
      * @param preparation_time - czas przygotowania
      */
     public Meal(String name, String[] components,
-                double price, float weight,
+                BigDecimal price, float weight,
                 E_KategoriaPosiłku category,
                 long preparation_time) {
         this.name = name;
@@ -50,12 +52,12 @@ public abstract class Meal {
         this.components = components;
     }
 
-    public double getPrice() {
-        return price;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public BigDecimal getPrice() {
+        return price;
     }
 
     public float getWeight() {

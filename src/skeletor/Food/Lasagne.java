@@ -2,6 +2,8 @@ package skeletor.Food;
 
 import skeletor.Enums.E_KategoriaPosiłku;
 
+import java.math.BigDecimal;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
@@ -17,7 +19,7 @@ public class Lasagne extends Noodle {
      * @param preparation_time
      */
     public Lasagne(String name, String[] components,
-                   double price, float weight,
+                   BigDecimal price, float weight,
                    E_KategoriaPosiłku category,
                    long preparation_time) {
         super(name, components, price, weight,
