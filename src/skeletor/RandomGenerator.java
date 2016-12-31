@@ -22,6 +22,36 @@ public class RandomGenerator {
 
     //todo wyświetlanie stworzonej listy posiłków dla sprawdzenia poprawności generowania
 
+    public void displayMeal(LinkedList<Meal> meals){
+        for (Meal x : meals){
+            System.out.print(x.getName()+"; ");
+            String[] tmp = x.getComponents();
+            for (int i = 0; i<tmp.length; i++){
+                System.out.print(tmp[i]+ ", ");
+            }
+            System.out.print(x.getPrice()+"; "+x.getWeight()+"; "+x.getCategory()+"; "+x.getPreparation_time()+"; ");
+            if (x.getName().substring(0,5).equals("pizza")){
+                Pizza y = (Pizza)x;
+                if (y.isSize_big()) {
+                    System.out.print("Duża;");
+                }else{
+                    System.out.print("Mała;");
+                }
+            }
+            if (x.getName().substring(0,6).equals("ciasto")){
+                Cake y = (Cake) x;
+                System.out.print(y.getCake_type()+";");
+            }
+            if (x.getName().substring(0,9).equals("naleśniki")){
+                Pancake y = (Pancake) x;
+                System.out.print(y.getAdditives()+";");
+            }
+            System.out.println();
+
+        }
+
+    }
+
     /**
      * Metoda generuje losowe posiłki i dodaje je na koniec listy wejsciowej.
      * @param meals lista posiłków
@@ -164,7 +194,7 @@ public class RandomGenerator {
     }
 
     private String generateMealName(int lenght){
-        Random random = new Random(System.currentTimeMillis());
+        Random random = new Random(System.nanoTime());
         String name = "";
         for (int i = 0; i<lenght; i++){
             char sign = (char) (random.nextInt(57) + 65);

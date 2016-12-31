@@ -52,6 +52,7 @@ public class ControlPanel {
 
         randomGenerator.displayDeliverers(deliverers_list);
         randomGenerator.displayClient(clients_list);
+        randomGenerator.displayMeal(meals_list);
 
     }
 
