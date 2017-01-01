@@ -109,17 +109,22 @@ public class ControlPanel {
             x.displayNameMeals();
         }
         System.out.println("Wątek");
-        for (Client x: clients_list){
-            new Thread(x).start();
-            System.out.println(1);
+        Thread[] threads = new Thread[clients_list.size()];
+        for (int i = 0; i<clients_list.size();i++){
+            threads[i] = new Thread(clients_list.get(i));
+            threads[i].start();
+            System.out.println(i);
         }
 
-        System.out.println("Czekam");
-        try {
-            sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (int i = 0; i<clients_list.size(); i++){
+            try {
+                System.out.println("Czekam "+i);
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+
 
         for (Order x: orderLinkedList){
             x.displayOrder();
