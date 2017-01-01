@@ -14,6 +14,41 @@ import static java.lang.Thread.sleep;
  */
 public class ControlPanel {
 
+    private static int orderNumber = 1;
+
+
+    private static LinkedList<DinnerKit> menu = new LinkedList<>();
+
+
+    private static LinkedList<Order> orderLinkedList = new LinkedList<>();
+
+    synchronized
+    public static int getOrderNumber() {
+        return orderNumber++;
+    }
+
+    synchronized
+    public static void addOrderToList(Order order){
+        orderLinkedList.addLast(order);
+    }
+
+    synchronized
+    public static LinkedList<DinnerKit> getMenu() {
+        return menu;
+    }
+
+    public static void setMenu(LinkedList<DinnerKit> menu) {
+        ControlPanel.menu = menu;
+    }
+
+    public static LinkedList<Order> getOrderLinkedList() {
+        return orderLinkedList;
+    }
+
+    public static void setOrderLinkedList(LinkedList<Order> orderLinkedList) {
+        ControlPanel.orderLinkedList = orderLinkedList;
+    }
+
     public static void main(String[] args) {
         Object guardian = new Object();
 
@@ -26,7 +61,6 @@ public class ControlPanel {
 
         for (int i = 0 ; i<10; i++){
             randomGenerator.addRandomClient(clients_list);
-
             //zabezpieczenie przed losowanie zmiennych o tym samym seedzie randoma
             try {
                 sleep(1);
@@ -53,7 +87,6 @@ public class ControlPanel {
             }
         }
         Random random = new Random(System.currentTimeMillis());
-        DinnerKit[] dinnerKits = new DinnerKit[10];
         for (int i = 0; i<10; i++){
             int count_of_meal = random.nextInt(4)+1;
             Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
@@ -66,16 +99,31 @@ public class ControlPanel {
                 int number_of_meal = random.nextInt(meals_list.size());
                 meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
             }
-            dinnerKits[i] = new DinnerKit((byte)(i+1),meals_in_DinnerKit);
+            menu.addLast(new DinnerKit((byte)(i+1),meals_in_DinnerKit));
         }
 
-        for (DinnerKit x: dinnerKits){
+        for (DinnerKit x: menu){
             System.out.println(x.getKit_number());
             System.out.println(x.calculateKitPrice());
             System.out.println(x.calculateKitWeight());
             x.displayNameMeals();
         }
+        System.out.println("Wątek");
+        for (Client x: clients_list){
+            new Thread(x).start();
+            System.out.println(1);
+        }
 
+        System.out.println("Czekam");
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (Order x: orderLinkedList){
+            x.displayOrder();
+        }
 //        randomGenerator.displayDeliverers(deliverers_list);
 //        randomGenerator.displayClient(clients_list);
         randomGenerator.displayMeal(meals_list);

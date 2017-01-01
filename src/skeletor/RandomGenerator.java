@@ -73,7 +73,6 @@ public class RandomGenerator {
         int tmp_price = random.nextInt(30)+10;
         String tmp = tmp_price + ".99";
         BigDecimal price = new BigDecimal(tmp);
-        System.out.println(price);
         //tworzenie wagi
         float weight = random.nextFloat()*10+1;
         //tworzenie czasu przygotowania
