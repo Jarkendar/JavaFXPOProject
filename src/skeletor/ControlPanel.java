@@ -18,9 +18,16 @@ public class ControlPanel {
 
 
     private static LinkedList<DinnerKit> menu = new LinkedList<>();
-
-
     private static LinkedList<Order> orderLinkedList = new LinkedList<>();
+    private static LinkedList<Thread> threads = new LinkedList<>();
+
+    public static void clearThreadListFromEndProcess(){
+        for (int i = 0; i<threads.size(); i++){
+            if (!threads.get(i).isAlive()){
+                threads.remove(i);
+            }
+        }
+    }
 
     synchronized
     public static int getOrderNumber() {
@@ -58,7 +65,7 @@ public class ControlPanel {
 
         RandomGenerator randomGenerator = new RandomGenerator();
 
-
+//**********TWORZENIE LISTY KLIENTÓW**********************
         for (int i = 0 ; i<10; i++){
             randomGenerator.addRandomClient(clients_list);
             //zabezpieczenie przed losowanie zmiennych o tym samym seedzie randoma
@@ -68,7 +75,7 @@ public class ControlPanel {
                 System.out.println(e);
             }
         }
-
+//***********TWORZENIE LISTY DOSTAWCÓW*******************
         for (int i = 0; i<10; i++){
             randomGenerator.addRandomDeliverer(deliverers_list);
             try{
@@ -77,7 +84,7 @@ public class ControlPanel {
                 System.out.println(e);
             }
         }
-
+//***********TWORZENIE WSTĘPNEJ LISTY POSIŁKÓW**********
         for (int i = 0; i<10; i++){
             randomGenerator.addRandomMeal(meals_list);
             try{
@@ -86,6 +93,7 @@ public class ControlPanel {
                 System.out.println(e);
             }
         }
+//***********TWORZENIE WSTĘPNEJ LISTY ZESTAWÓW OBIADOWYCH************
         Random random = new Random(System.currentTimeMillis());
         for (int i = 0; i<10; i++){
             int count_of_meal = random.nextInt(4)+1;
@@ -101,30 +109,29 @@ public class ControlPanel {
             }
             menu.addLast(new DinnerKit((byte)(i+1),meals_in_DinnerKit));
         }
-
+//***********WYŚWIETLENIE ZESTAWÓW OBIADOWYCH***************
         for (DinnerKit x: menu){
             System.out.println(x.getKit_number());
             System.out.println(x.calculateKitPrice());
             System.out.println(x.calculateKitWeight());
             x.displayNameMeals();
         }
+//**********TWORZENIE LISTY WĄTKÓW********************
         System.out.println("Wątek");
-        Thread[] threads = new Thread[clients_list.size()];
         for (int i = 0; i<clients_list.size();i++){
-            threads[i] = new Thread(clients_list.get(i));
-            threads[i].start();
+            getThreads().addLast(new Thread(clients_list.get(i)));
+            getThreads().getLast().start();
             System.out.println(i);
         }
-
-        for (int i = 0; i<clients_list.size(); i++){
+//***********PĘTLA CZEKANIA NA WSZYSTKIE WĄTKI********
+        while (getThreads().size() != 0){
             try {
-                System.out.println("Czekam "+i);
-                threads[i].join();
+                getThreads().getFirst().join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            clearThreadListFromEndProcess();
         }
-
 
         for (Order x: orderLinkedList){
             x.displayOrder();
@@ -136,4 +143,11 @@ public class ControlPanel {
     }
 
 
+    public static LinkedList<Thread> getThreads() {
+        return threads;
+    }
+
+    public static void setThreads(LinkedList<Thread> threads) {
+        ControlPanel.threads = threads;
+    }
 }

@@ -11,7 +11,9 @@ public class Order {
     private long delivery_time;
     private DinnerKit[] kit_list;
 
-
+    /**
+     * Metoda wyświetlająca wszystkie dane zamówienia, wraz z listą zestawów zawierających się w zestawie.
+     */
     public void displayOrder(){
         System.out.println("Numer zamówienia: "+number + "; adres dostawy: "+address
                 +"; czas zamówienia: "+delivery_time+ "; ");

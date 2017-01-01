@@ -20,8 +20,10 @@ public class RandomGenerator {
         orders = 0;
     }
 
-    //todo wyświetlanie stworzonej listy posiłków dla sprawdzenia poprawności generowania
-
+    /**
+     * Metoda wyświetla listę posiłków w celu weryfikowania poprawności działania.
+     * @param meals lista posiłków
+     */
     public void displayMeal(LinkedList<Meal> meals){
         for (Meal x : meals){
             System.out.print(x.getName()+"; ");
@@ -192,6 +194,11 @@ public class RandomGenerator {
         }
     }
 
+    /**
+     * Metoda generująca losowy łańcuch znaków o podanej długości.
+     * @param lenght długość
+     * @return łańcuch znaków
+     */
     private String generateMealName(int lenght){
         Random random = new Random(System.nanoTime());
         String name = "";
