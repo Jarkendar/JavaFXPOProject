@@ -1,17 +1,41 @@
 package skeletor.Person;
 
+import skeletor.RandomGenerator;
+
 import java.math.BigInteger;
+import java.util.Random;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Client extends Human {
+public abstract class Client extends Human implements Runnable {
 
     private int code;
     private int number_order;
     private long time_order;
     private String address;
     private String email = "";
+
+    @Override
+    public void run() {
+        int number_of_try = 0;
+        Random random = new Random(System.currentTimeMillis());
+        while (true){
+            int wait_time = random.nextInt(4000)+1000;
+
+            try {
+                sleep(wait_time);
+
+            }catch (InterruptedException e){
+                System.out.println(e);
+            }
+
+            if (number_of_try == 3) break;
+            else number_of_try++;
+        }
+    }
 
     /**
      * Konstruktor klasy Client Human bez adresu email
