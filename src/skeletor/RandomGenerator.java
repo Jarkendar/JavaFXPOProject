@@ -3,6 +3,9 @@ package skeletor;
 import skeletor.Enums.*;
 import skeletor.Food.*;
 import skeletor.Person.*;
+import skeletor.Transport.Car;
+import skeletor.Transport.Scooter;
+import skeletor.Transport.Vehicle;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,6 +21,63 @@ public class RandomGenerator {
 
     public RandomGenerator() {
         orders = 0;
+    }
+
+    /**
+     * Metoda tworzenie listy pojazdów, z losowym generowaniem.
+     * @param vehicles lista pojazdów do uzupełnienia
+     * @param countVehicle liczba pojazdów do wygenerowania
+     */
+    public void createVehicleForRestaurant(LinkedList<Vehicle> vehicles, int countVehicle){
+        Random random = new Random();
+        for (int i = 0; i<countVehicle; i++){
+            random.setSeed(System.nanoTime());
+            boolean isCar = random.nextBoolean();
+            String registerNumber = "";
+            do {
+                registerNumber = randomStringName(8);
+            }while (!checkUniqRegisterNumber(registerNumber,vehicles));
+            if (isCar){
+                Car car = new Car((float) 100.0,(float)45.0,(byte)50, registerNumber);
+                vehicles.addLast(car);
+            }else {
+                Scooter scooter = new Scooter((float) 50.0, (float)20.0, (byte) 30, registerNumber );
+                vehicles.addLast(scooter);
+            }
+        }
+    }
+
+    /**
+     * Metoda wyświetla dane pojazdów z listy wejściowej
+     * @param vehicles lista pojazdów
+     */
+    public void displayVehicle(LinkedList<Vehicle> vehicles){
+        for (Vehicle x: vehicles) {
+
+            if (x instanceof Scooter){
+                System.out.print("Skuter: ");
+            }else if (x instanceof Car){
+                System.out.print("Samochód: ");
+            }
+            System.out.print("pojemność zbiornika paliwa: "+x.getTank_max_value()
+                    +"; maksymalna prędkość: "+x.getSpeed()
+                    +"; ładowność: "+x.getCargo()
+                    +"; numer rejestracyjny: "+x.getRegistration_number() );
+            System.out.println();
+        }
+    }
+
+    /**
+     * Metoda sprawdza unikalność numeru rejestracyjnego.
+     * @param registerNumber numer poddany próbie
+     * @param vehicles lista pojazdów
+     * @return true=numer jest unikalny, false=numer nie jest unikalny
+     */
+    private boolean checkUniqRegisterNumber(String registerNumber, LinkedList<Vehicle> vehicles){
+        for (Vehicle x: vehicles){
+            if (x.getRegistration_number().equals(registerNumber)) return false;
+        }
+        return true;
     }
 
     /**

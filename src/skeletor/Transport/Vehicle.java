@@ -8,6 +8,7 @@ public abstract class Vehicle {
     private float tank_max_value;
     private byte speed;
     private String registration_number;
+    private float actualTankValue = 0;
 
     /**
      * Konstruktor klasy Transport.Vehicle
@@ -22,6 +23,26 @@ public abstract class Vehicle {
         this.tank_max_value = tank_max_value;
         this.speed = speed;
         this.registration_number = registration_number;
+    }
+
+    public float getActualTankValue() {
+        return actualTankValue;
+    }
+
+    public void setActualTankValue(float actualTankValue) {
+        this.actualTankValue = actualTankValue;
+    }
+
+    /**
+     * Metoda spalania do nadpisania w klasach potomnych.
+     */
+    public abstract void burnGasoline();
+
+    /**
+     * Metoda napełniania baku do pełna.
+     */
+    public void fillTankVehicle(){
+        actualTankValue = tank_max_value;
     }
 
     public float getCargo() {

@@ -3,6 +3,7 @@ package skeletor;
 
 import skeletor.Food.Meal;
 import skeletor.Person.*;
+import skeletor.Transport.Vehicle;
 
 import java.util.LinkedList;
 import java.util.Random;
@@ -20,7 +21,17 @@ public class ControlPanel {
     private static LinkedList<DinnerKit> menu = new LinkedList<>();
     private static LinkedList<Order> orderLinkedList = new LinkedList<>();
     private static LinkedList<Thread> threads = new LinkedList<>();
+    private static LinkedList<Vehicle> vehicles = new LinkedList<>();
 
+    public static LinkedList<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public static void setVehicles(LinkedList<Vehicle> vehicles) {
+        ControlPanel.vehicles = vehicles;
+    }
+
+    synchronized
     public static void clearThreadListFromEndProcess(){
         for (int i = 0; i<threads.size(); i++){
             if (!threads.get(i).isAlive()){
@@ -132,13 +143,16 @@ public class ControlPanel {
             }
             clearThreadListFromEndProcess();
         }
+//***********TWORZENIE POJAZDÓW RESTAURACJI***********
+        randomGenerator.createVehicleForRestaurant(vehicles, 10);
 
         for (Order x: orderLinkedList){
             x.displayOrder();
         }
 //        randomGenerator.displayDeliverers(deliverers_list);
 //        randomGenerator.displayClient(clients_list);
-        randomGenerator.displayMeal(meals_list);
+//        randomGenerator.displayMeal(meals_list);
+        randomGenerator.displayVehicle(vehicles);
 
     }
 
