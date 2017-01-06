@@ -91,9 +91,11 @@ public class Deliverer extends Human implements Runnable {
         return vehicle;
     }
 
-    synchronized
+
     public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
+        synchronized (guardian) {
+            this.vehicle = vehicle;
+        }
     }
 
     /**
