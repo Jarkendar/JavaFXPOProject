@@ -14,15 +14,15 @@ import static java.lang.Thread.sleep;
  * Created by Jarek on 2016-12-02.
  */
 public class ControlPanel {
-
+    //sekcje krytyczne
     private static int orderNumber = 1;
-
 
     private static LinkedList<DinnerKit> menu = new LinkedList<>();
     private static LinkedList<Order> orderLinkedList = new LinkedList<>();
     private static LinkedList<Thread> threads = new LinkedList<>();
     private static LinkedList<Vehicle> vehicles = new LinkedList<>();
 
+    synchronized
     public static LinkedList<Vehicle> getVehicles() {
         return vehicles;
     }

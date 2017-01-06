@@ -1,5 +1,6 @@
 package skeletor.Person;
 
+import skeletor.ControlPanel;
 import skeletor.Enums.*;
 import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
@@ -7,16 +8,34 @@ import skeletor.Transport.Vehicle;
 
 import java.util.LinkedList;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Deliverer extends Human  {
+public class Deliverer extends Human implements Runnable {
     private final long PESEL;
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
     private Vehicle vehicle = null;
+
+    @Override
+    public void run() {
+        getVehicleFromParking(ControlPanel.getVehicles());
+        System.out.println(PESEL + " zabrałem "+ vehicle.getRegistration_number());
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(PESEL + " opuszczam "+ vehicle.getRegistration_number());
+        leaveVehicleOnParking(ControlPanel.getVehicles());
+        if (vehicle == null) {
+            System.out.println(PESEL + " teraz mam NULL");
+        }
+    }
 
     /**
      * Metoda zostawiania/zwalniania pojazdu na parkingu restauracji.
