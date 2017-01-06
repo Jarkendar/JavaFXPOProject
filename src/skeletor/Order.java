@@ -8,15 +8,32 @@ import java.math.BigDecimal;
 public class Order {
     private int number;
     private String address;
-    private long delivery_time;
+    private long orderTime;
     private DinnerKit[] kit_list;
+    private long readyTime;
+
+    /**
+     * Metoda ustawia czas gotowości zamówienia, na zasadzie wyciągnięcia czsu najpóźniejszego.
+     */
+    private void setReadyTime(){
+        long maxPreparationTime = 0;
+        for (int i = 0; i<kit_list.length; i++){
+            for(int j = 0; j<kit_list[i].getMeal_list().length; j++){
+                if (maxPreparationTime < kit_list[i].getMeal_list()[j].getPreparation_time()){
+                    maxPreparationTime = kit_list[i].getMeal_list()[j].getPreparation_time();
+                }
+            }
+        }
+        this.readyTime = maxPreparationTime + orderTime;
+    }
+
 
     /**
      * Metoda wyświetlająca wszystkie dane zamówienia, wraz z listą zestawów zawierających się w zestawie.
      */
     public void displayOrder(){
         System.out.println("Numer zamówienia: "+number + "; adres dostawy: "+address
-                +"; czas zamówienia: "+delivery_time+ "; ");
+                +"; czas zamówienia: "+ orderTime + "; czas gotowości "+ readyTime + "; " );
         for (DinnerKit x: kit_list){
             System.out.print(" Numer zestawu: " + x.getKit_number()
                     +"; cena zestawu: "+x.calculateKitPrice()
@@ -29,15 +46,16 @@ public class Order {
      * Konstruktor klasy Order
      * @param number - numer zamówienia (unikalny)
      * @param address - adres dostawy
-     * @param delivery_time - czas dostawy
+     * @param orderTime - czas dostawy
      * @param kit_list - lista zestawów obiadowych
      */
     public Order(int number, String address,
-                 long delivery_time, DinnerKit[] kit_list) {
+                 long orderTime, DinnerKit[] kit_list) {
         this.number = number;
         this.address = address;
-        this.delivery_time = delivery_time;
+        this.orderTime = orderTime;
         this.kit_list = kit_list;
+        setReadyTime();
     }
 
     /**
@@ -82,12 +100,12 @@ public class Order {
         this.address = address;
     }
 
-    public long getDelivery_time() {
-        return delivery_time;
+    public long getOrderTime() {
+        return orderTime;
     }
 
-    public void setDelivery_time(long delivery_time) {
-        this.delivery_time = delivery_time;
+    public void setOrderTime(long orderTime) {
+        this.orderTime = orderTime;
     }
 
     public DinnerKit[] getKit_list() {
