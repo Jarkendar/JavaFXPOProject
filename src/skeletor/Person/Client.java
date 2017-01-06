@@ -1,17 +1,56 @@
 package skeletor.Person;
 
+import skeletor.ControlPanel;
+import skeletor.DinnerKit;
+import skeletor.Order;
+import skeletor.RandomGenerator;
+
 import java.math.BigInteger;
+import java.util.LinkedList;
+import java.util.Random;
+
+import static java.lang.Thread.sleep;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Client extends Human {
+public abstract class Client extends Human implements Runnable {
 
     private int code;
     private int number_order;
     private long time_order;
     private String address;
     private String email = "";
+
+    @Override
+    public void run() {
+        int number_of_try = 0;
+        Random random = new Random(System.nanoTime());
+        while (true){
+            int wait_time = random.nextInt(4)+1000;
+
+            try {
+                sleep(wait_time);
+                LinkedList<DinnerKit> tmpmenu = ControlPanel.getMenu();
+
+                int countChoose = random.nextInt(3)+1;
+                DinnerKit[] dinnerKits = new DinnerKit[countChoose];
+                for (int i = 0 ; i<countChoose; i++){
+                    int chooseKit = random.nextInt(tmpmenu.size());
+                    dinnerKits[i] = tmpmenu.get(chooseKit);
+                }
+                Order order = new Order(ControlPanel.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
+                ControlPanel.addOrderToList(order);
+            }catch (InterruptedException e){
+                System.out.println(e);
+            }
+
+            if (number_of_try == 3) break;
+            number_of_try++;
+        }
+    }
+
+
 
     /**
      * Konstruktor klasy Client Human bez adresu email

@@ -1,16 +1,98 @@
 package skeletor.Person;
 
+import skeletor.ControlPanel;
 import skeletor.Enums.*;
+import skeletor.Transport.Car;
+import skeletor.Transport.Scooter;
+import skeletor.Transport.Vehicle;
+
+import java.util.LinkedList;
+
+import static java.lang.Thread.sleep;
 
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Deliverer extends Human {
+public class Deliverer extends Human implements Runnable {
     private final long PESEL;
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
+    private Vehicle vehicle = null;
+    private final Object guardian;
+
+    @Override
+    public void run() {
+        do {
+            getVehicleFromParking(ControlPanel.getVehicles());
+        } while (vehicle == null);
+        synchronized (guardian) {
+            System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
+            if (vehicle instanceof Car){
+                System.out.print("samochód");
+            }
+            if (vehicle instanceof Scooter){
+                System.out.print("skuter");
+            }
+            System.out.println(" mam uprawnienia na " + getCan_drive());
+        }
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(PESEL + " opuszczam "+ vehicle.getRegistration_number());
+        leaveVehicleOnParking(ControlPanel.getVehicles());
+        if (vehicle == null) {
+            System.out.println(PESEL + " teraz mam NULL");
+        }
+    }
+
+    /**
+     * Metoda zostawiania/zwalniania pojazdu na parkingu restauracji.
+     * @param vehicles lista pojazdów na parkingu
+     */
+    public void leaveVehicleOnParking(LinkedList<Vehicle> vehicles){
+        synchronized (guardian) {
+            vehicles.addLast(this.vehicle);
+            vehicles.getLast().fillTankVehicle();
+            this.vehicle = null;
+        }
+    }
+
+    /**
+     * Metoda pobierania pojazdu z parkingu restauracji.
+     * @param vehicles lista pojazdów na parkingu
+     * @return wartość boolean określająca czy udało się pobrać samochód
+     */
+    public boolean getVehicleFromParking (LinkedList<Vehicle> vehicles){
+        synchronized (guardian) {
+            for (int i = 0; i < vehicles.size(); i++) {
+                if (vehicles.get(i) instanceof Car && this.getCan_drive().equals(E_Uprawnienia.samochód)) {
+                    setVehicle(vehicles.get(i));
+                    vehicles.remove(i);
+                    return true;
+                } else if (vehicles.get(i) instanceof Scooter && this.getCan_drive().equals(E_Uprawnienia.skuter)) {
+                    setVehicle(vehicles.get(i));
+                    vehicles.remove(i);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+
+    public void setVehicle(Vehicle vehicle) {
+        synchronized (guardian) {
+            this.vehicle = vehicle;
+        }
+    }
 
     /**
      * Konstructor klasy Deliver Person.Human
@@ -23,12 +105,13 @@ public class Deliverer extends Human {
      */
     public Deliverer(String name, String subname,
                      long PESEL, int[] work_hour,
-                     E_Dni[] work_day, E_Uprawnienia can_drive){
+                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian){
         super(name, subname);
         this.PESEL = PESEL;
         this.work_day = work_day;
         this.work_hour = work_hour;
         this.can_drive = can_drive;
+        this.guardian = guardian;
     }
 
 

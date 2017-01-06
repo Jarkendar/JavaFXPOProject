@@ -18,4 +18,12 @@ public class Car extends Vehicle {
         super(cargo, tank_max_value,
                 speed, registration_number);
     }
+
+    /**
+     * Metoda spalania, spala 0.09 na cykl.
+     */
+    @Override
+    public void burnGasoline() {
+        setActualTankValue(getTank_max_value()-(float) 0.09);
+    }
 }

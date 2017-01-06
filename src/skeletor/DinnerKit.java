@@ -28,7 +28,7 @@ public class DinnerKit {
     public BigDecimal calculateKitPrice(){
         BigDecimal price = new BigDecimal(0);
         for (Meal x: this.meal_list) {
-            price.add(x.getPrice());
+            price = price.add(x.getPrice());
         }
         return price;
     }
@@ -45,6 +45,19 @@ public class DinnerKit {
         return weight;
     }
 
+    /**
+     * Metoda wyświetlająca nazwy posiłków z zestawu.
+     */
+    public void displayNameMeals(){
+        for (Meal x: meal_list){
+            System.out.println(x.getName()+" ");
+        }
+    }
+
+    /**
+     * Getter
+     * @return numer zestawu
+     */
     public byte getKit_number() {
         return kit_number;
     }

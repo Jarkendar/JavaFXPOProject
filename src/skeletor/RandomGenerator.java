@@ -3,6 +3,9 @@ package skeletor;
 import skeletor.Enums.*;
 import skeletor.Food.*;
 import skeletor.Person.*;
+import skeletor.Transport.Car;
+import skeletor.Transport.Scooter;
+import skeletor.Transport.Vehicle;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,7 +23,96 @@ public class RandomGenerator {
         orders = 0;
     }
 
-    //todo wyświetlanie stworzonej listy posiłków dla sprawdzenia poprawności generowania
+    /**
+     * Metoda tworzenie listy pojazdów, z losowym generowaniem.
+     * @param vehicles lista pojazdów do uzupełnienia
+     * @param countVehicle liczba pojazdów do wygenerowania
+     */
+    public void createVehicleForRestaurant(LinkedList<Vehicle> vehicles, int countVehicle){
+        Random random = new Random();
+        for (int i = 0; i<countVehicle; i++){
+            random.setSeed(System.nanoTime());
+            boolean isCar = random.nextBoolean();
+            String registerNumber = "";
+            do {
+                registerNumber = randomStringName(8);
+            }while (!checkUniqRegisterNumber(registerNumber,vehicles));
+            if (isCar){
+                Car car = new Car((float) 100.0,(float)45.0,(byte)50, registerNumber);
+                vehicles.addLast(car);
+            }else {
+                Scooter scooter = new Scooter((float) 50.0, (float)20.0, (byte) 30, registerNumber );
+                vehicles.addLast(scooter);
+            }
+        }
+    }
+
+    /**
+     * Metoda wyświetla dane pojazdów z listy wejściowej
+     * @param vehicles lista pojazdów
+     */
+    public void displayVehicle(LinkedList<Vehicle> vehicles){
+        for (Vehicle x: vehicles) {
+
+            if (x instanceof Scooter){
+                System.out.print("Skuter: ");
+            }else if (x instanceof Car){
+                System.out.print("Samochód: ");
+            }
+            System.out.print("pojemność zbiornika paliwa: "+x.getTank_max_value()
+                    +"; maksymalna prędkość: "+x.getSpeed()
+                    +"; ładowność: "+x.getCargo()
+                    +"; numer rejestracyjny: "+x.getRegistration_number() );
+            System.out.println();
+        }
+    }
+
+    /**
+     * Metoda sprawdza unikalność numeru rejestracyjnego.
+     * @param registerNumber numer poddany próbie
+     * @param vehicles lista pojazdów
+     * @return true=numer jest unikalny, false=numer nie jest unikalny
+     */
+    private boolean checkUniqRegisterNumber(String registerNumber, LinkedList<Vehicle> vehicles){
+        for (Vehicle x: vehicles){
+            if (x.getRegistration_number().equals(registerNumber)) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Metoda wyświetla listę posiłków w celu weryfikowania poprawności działania.
+     * @param meals lista posiłków
+     */
+    public void displayMeal(LinkedList<Meal> meals){
+        for (Meal x : meals){
+            System.out.print(x.getName()+"; ");
+            String[] tmp = x.getComponents();
+            for (int i = 0; i<tmp.length; i++){
+                System.out.print(tmp[i]+ ", ");
+            }
+            System.out.print(x.getPrice()+"; "+x.getWeight()+"; "+x.getCategory()+"; "+x.getPreparation_time()+"; ");
+            if (x.getName().substring(0,5).equals("pizza")){
+                Pizza y = (Pizza)x;
+                if (y.isSize_big()) {
+                    System.out.print("Duża;");
+                }else{
+                    System.out.print("Mała;");
+                }
+            }
+            if (x.getName().substring(0,6).equals("ciasto")){
+                Cake y = (Cake) x;
+                System.out.print(y.getCake_type()+";");
+            }
+            if (x.getName().substring(0,9).equals("naleśniki")){
+                Pancake y = (Pancake) x;
+                System.out.print(y.getAdditives()+";");
+            }
+            System.out.println();
+
+        }
+
+    }
 
     /**
      * Metoda generuje losowe posiłki i dodaje je na koniec listy wejsciowej.
@@ -43,7 +135,6 @@ public class RandomGenerator {
         int tmp_price = random.nextInt(30)+10;
         String tmp = tmp_price + ".99";
         BigDecimal price = new BigDecimal(tmp);
-        System.out.println(price);
         //tworzenie wagi
         float weight = random.nextFloat()*10+1;
         //tworzenie czasu przygotowania
@@ -163,8 +254,13 @@ public class RandomGenerator {
         }
     }
 
+    /**
+     * Metoda generująca losowy łańcuch znaków o podanej długości.
+     * @param lenght długość
+     * @return łańcuch znaków
+     */
     private String generateMealName(int lenght){
-        Random random = new Random(System.currentTimeMillis());
+        Random random = new Random(System.nanoTime());
         String name = "";
         for (int i = 0; i<lenght; i++){
             char sign = (char) (random.nextInt(57) + 65);
@@ -206,7 +302,7 @@ public class RandomGenerator {
      * Metoda losuje wartości dla dostawcy , następnie tworzy jego obiekt i wsadza do listy na koniec.
      * @param deliverers - lista dostawców
      */
-    public void addRandomDeliverer(LinkedList<Deliverer> deliverers){
+    public void addRandomDeliverer(LinkedList<Deliverer> deliverers, Object guardian){
         Random random = new Random(System.currentTimeMillis());
 
         //dane ogólne dla dostawcy
@@ -223,7 +319,7 @@ public class RandomGenerator {
         if (type) uprawnienia = E_Uprawnienia.samochód;
         else uprawnienia = E_Uprawnienia.skuter;
 
-        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia);
+        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia, guardian);
 
         deliverers.addLast(deliverer);
 

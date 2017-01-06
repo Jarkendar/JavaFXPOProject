@@ -12,6 +12,20 @@ public class Order {
     private DinnerKit[] kit_list;
 
     /**
+     * Metoda wyświetlająca wszystkie dane zamówienia, wraz z listą zestawów zawierających się w zestawie.
+     */
+    public void displayOrder(){
+        System.out.println("Numer zamówienia: "+number + "; adres dostawy: "+address
+                +"; czas zamówienia: "+delivery_time+ "; ");
+        for (DinnerKit x: kit_list){
+            System.out.print(" Numer zestawu: " + x.getKit_number()
+                    +"; cena zestawu: "+x.calculateKitPrice()
+                    +"; waga zestawu: "+x.calculateKitWeight() );
+        }
+        System.out.println("\nCena zamówienia: "+calculateOrderPrice()+"; waga zestawu: "+calculateOrderWeight());
+    }
+
+    /**
      * Konstruktor klasy Order
      * @param number - numer zamówienia (unikalny)
      * @param address - adres dostawy
@@ -34,7 +48,7 @@ public class Order {
     public BigDecimal calculateOrderPrice(){
         BigDecimal order_price = new BigDecimal(0);
         for (DinnerKit x: this.kit_list) {
-            order_price.add(x.calculateKitPrice());
+            order_price = order_price.add(x.calculateKitPrice());
         }
         return order_price;
     }
