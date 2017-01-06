@@ -154,9 +154,9 @@ public class ControlPanel {
 
 
 
-//        for (Order x: orderLinkedList){
-//            x.displayOrder();
-//        }
+        for (Order x: orderLinkedList){
+            x.displayOrder();
+        }
 //        randomGenerator.displayDeliverers(deliverers_list);
 //        randomGenerator.displayClient(clients_list);
 //        randomGenerator.displayMeal(meals_list);
