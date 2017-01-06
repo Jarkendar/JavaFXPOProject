@@ -20,11 +20,7 @@ public class Deliverer extends Human implements Runnable {
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
     private Vehicle vehicle = null;
-    private Object guardian;
-
-    public void setGuardian(Object guardian) {
-        this.guardian = guardian;
-    }
+    private final Object guardian;
 
     @Override
     public void run() {

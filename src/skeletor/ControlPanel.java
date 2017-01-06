@@ -88,7 +88,7 @@ public class ControlPanel {
             }
         }
 //***********TWORZENIE LISTY DOSTAWCÓW*******************
-        for (int i = 0; i<10; i++){
+        for (int i = 0; i<50; i++){
             randomGenerator.addRandomDeliverer(deliverers_list, guardian);
             try{
                 sleep(1);
