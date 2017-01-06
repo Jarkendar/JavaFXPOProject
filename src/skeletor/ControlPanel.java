@@ -15,12 +15,12 @@ import static java.lang.Thread.sleep;
  */
 public class ControlPanel {
     //sekcje krytyczne
-    private static int orderNumber = 1;
+    private static volatile int orderNumber = 1;
 
-    private static LinkedList<DinnerKit> menu = new LinkedList<>();
-    private static LinkedList<Order> orderLinkedList = new LinkedList<>();
-    private static LinkedList<Thread> threads = new LinkedList<>();
-    private static LinkedList<Vehicle> vehicles = new LinkedList<>();
+    private static volatile LinkedList<DinnerKit> menu = new LinkedList<>();
+    private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
+    private static volatile LinkedList<Thread> threads = new LinkedList<>();
+    private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
 
     synchronized
     public static LinkedList<Vehicle> getVehicles() {
@@ -75,7 +75,8 @@ public class ControlPanel {
         LinkedList<Meal> meals_list = new LinkedList<>();
 
         RandomGenerator randomGenerator = new RandomGenerator();
-
+//***********TWORZENIE POJAZDÓW RESTAURACJI***********
+        randomGenerator.createVehicleForRestaurant(vehicles, 10);
 //**********TWORZENIE LISTY KLIENTÓW**********************
         for (int i = 0 ; i<10; i++){
             randomGenerator.addRandomClient(clients_list);
@@ -88,7 +89,7 @@ public class ControlPanel {
         }
 //***********TWORZENIE LISTY DOSTAWCÓW*******************
         for (int i = 0; i<10; i++){
-            randomGenerator.addRandomDeliverer(deliverers_list);
+            randomGenerator.addRandomDeliverer(deliverers_list, guardian);
             try{
                 sleep(1);
             }catch (InterruptedException e){
@@ -131,9 +132,16 @@ public class ControlPanel {
         System.out.println("Wątek");
         for (int i = 0; i<clients_list.size();i++){
             getThreads().addLast(new Thread(clients_list.get(i)));
-            getThreads().getLast().start();
-            System.out.println(i);
         }
+        for (int i = 0; i<deliverers_list.size(); i++){
+            getThreads().addLast(new Thread(deliverers_list.get(i)));
+        }
+//**********ODPALENIE WĄTKÓW WSZYSTKICH**************
+        for (int i = 0; i<getThreads().size(); i++){
+            getThreads().get(i).start();
+        }
+
+
 //***********PĘTLA CZEKANIA NA WSZYSTKIE WĄTKI********
         while (getThreads().size() != 0){
             try {
@@ -143,12 +151,12 @@ public class ControlPanel {
             }
             clearThreadListFromEndProcess();
         }
-//***********TWORZENIE POJAZDÓW RESTAURACJI***********
-        randomGenerator.createVehicleForRestaurant(vehicles, 10);
 
-        for (Order x: orderLinkedList){
-            x.displayOrder();
-        }
+
+
+//        for (Order x: orderLinkedList){
+//            x.displayOrder();
+//        }
 //        randomGenerator.displayDeliverers(deliverers_list);
 //        randomGenerator.displayClient(clients_list);
 //        randomGenerator.displayMeal(meals_list);

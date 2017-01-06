@@ -20,11 +20,27 @@ public class Deliverer extends Human implements Runnable {
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
     private Vehicle vehicle = null;
+    private Object guardian;
+
+    public void setGuardian(Object guardian) {
+        this.guardian = guardian;
+    }
 
     @Override
     public void run() {
-        getVehicleFromParking(ControlPanel.getVehicles());
-        System.out.println(PESEL + " zabrałem "+ vehicle.getRegistration_number());
+        do {
+            getVehicleFromParking(ControlPanel.getVehicles());
+        } while (vehicle == null);
+        synchronized (guardian) {
+            System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
+            if (vehicle instanceof Car){
+                System.out.print("samochód");
+            }
+            if (vehicle instanceof Scooter){
+                System.out.print("skuter");
+            }
+            System.out.println(" mam uprawnienia na " + getCan_drive());
+        }
         try {
             sleep(1000);
         } catch (InterruptedException e) {
@@ -42,9 +58,11 @@ public class Deliverer extends Human implements Runnable {
      * @param vehicles lista pojazdów na parkingu
      */
     public void leaveVehicleOnParking(LinkedList<Vehicle> vehicles){
-        vehicles.addLast(this.vehicle);
-        vehicles.getLast().fillTankVehicle();
-        this.vehicle = null;
+        synchronized (guardian) {
+            vehicles.addLast(this.vehicle);
+            vehicles.getLast().fillTankVehicle();
+            this.vehicle = null;
+        }
     }
 
     /**
@@ -53,23 +71,27 @@ public class Deliverer extends Human implements Runnable {
      * @return wartość boolean określająca czy udało się pobrać samochód
      */
     public boolean getVehicleFromParking (LinkedList<Vehicle> vehicles){
-        for (int i = 0; i<vehicles.size(); i++){
-            if (vehicles.get(i) instanceof Car && this.getCan_drive().equals(E_Uprawnienia.samochód)){
-                setVehicle(vehicles.get(i));
-                vehicles.remove(i);
-                return true;
-            }else if(vehicles.get(i) instanceof Scooter && this.getCan_drive().equals(E_Uprawnienia.skuter)){
-                setVehicle(vehicles.get(i));
-                return true;
+        synchronized (guardian) {
+            for (int i = 0; i < vehicles.size(); i++) {
+                if (vehicles.get(i) instanceof Car && this.getCan_drive().equals(E_Uprawnienia.samochód)) {
+                    setVehicle(vehicles.get(i));
+                    vehicles.remove(i);
+                    return true;
+                } else if (vehicles.get(i) instanceof Scooter && this.getCan_drive().equals(E_Uprawnienia.skuter)) {
+                    setVehicle(vehicles.get(i));
+                    vehicles.remove(i);
+                    return true;
+                }
             }
+            return false;
         }
-        return false;
     }
 
     public Vehicle getVehicle() {
         return vehicle;
     }
 
+    synchronized
     public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
     }
@@ -85,12 +107,13 @@ public class Deliverer extends Human implements Runnable {
      */
     public Deliverer(String name, String subname,
                      long PESEL, int[] work_hour,
-                     E_Dni[] work_day, E_Uprawnienia can_drive){
+                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian){
         super(name, subname);
         this.PESEL = PESEL;
         this.work_day = work_day;
         this.work_hour = work_hour;
         this.can_drive = can_drive;
+        this.guardian = guardian;
     }
 
 

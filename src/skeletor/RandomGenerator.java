@@ -302,7 +302,7 @@ public class RandomGenerator {
      * Metoda losuje wartości dla dostawcy , następnie tworzy jego obiekt i wsadza do listy na koniec.
      * @param deliverers - lista dostawców
      */
-    public void addRandomDeliverer(LinkedList<Deliverer> deliverers){
+    public void addRandomDeliverer(LinkedList<Deliverer> deliverers, Object guardian){
         Random random = new Random(System.currentTimeMillis());
 
         //dane ogólne dla dostawcy
@@ -319,7 +319,7 @@ public class RandomGenerator {
         if (type) uprawnienia = E_Uprawnienia.samochód;
         else uprawnienia = E_Uprawnienia.skuter;
 
-        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia);
+        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia, guardian);
 
         deliverers.addLast(deliverer);
 
