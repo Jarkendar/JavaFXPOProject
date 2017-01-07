@@ -24,7 +24,12 @@ public class ControlPanel {
     private static volatile LinkedList<Thread> threads = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
 
-    private static int width = 50, lenght = 50;
+    //zmienne regulujące
+    private static int width = 50, lenght = 50, vehicleNumber = 30;
+
+    public static int getVehicleNumber() {
+        return vehicleNumber;
+    }
 
     public static int getWidth() {
         return width;
@@ -92,7 +97,7 @@ public class ControlPanel {
 
         RandomGenerator randomGenerator = new RandomGenerator();
 //***********TWORZENIE POJAZDÓW RESTAURACJI***********
-        randomGenerator.createVehicleForRestaurant(vehicles, 10);
+        randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
 //**********TWORZENIE LISTY KLIENTÓW**********************
         for (int i = 0 ; i<10; i++){
             randomGenerator.addRandomClient(clients_list);
