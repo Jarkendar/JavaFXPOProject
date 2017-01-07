@@ -59,6 +59,7 @@ public class ControlPanel {
         ControlPanel.menu = menu;
     }
 
+    synchronized
     public static LinkedList<Order> getOrderLinkedList() {
         return orderLinkedList;
     }
@@ -161,6 +162,7 @@ public class ControlPanel {
 //        randomGenerator.displayClient(clients_list);
 //        randomGenerator.displayMeal(meals_list);
         randomGenerator.displayVehicle(vehicles);
+        System.out.println(orderLinkedList.size());
 
     }
 

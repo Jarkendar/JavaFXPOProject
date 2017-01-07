@@ -24,7 +24,7 @@ public class Order {
                 }
             }
         }
-        this.readyTime = maxPreparationTime + orderTime;
+        this.readyTime = maxPreparationTime*1000 + orderTime;
     }
 
 
@@ -82,6 +82,10 @@ public class Order {
             order_weight += x.calculateKitWeight();
         }
         return order_weight;
+    }
+
+    public long getReadyTime() {
+        return readyTime;
     }
 
     public int getNumber() {

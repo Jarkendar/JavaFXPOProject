@@ -45,7 +45,7 @@ public abstract class Client extends Human implements Runnable {
                 System.out.println(e);
             }
 
-            if (number_of_try == 3) break;
+            if (number_of_try == 10) break;
             number_of_try++;
         }
     }
