@@ -604,8 +604,8 @@ public class RandomGenerator {
      */
     private String generateAddress(){
         Random random = new Random(System.currentTimeMillis());
-        int x = random.nextInt(900);
-        int y = random.nextInt(750);
+        int x = random.nextInt(ControlPanel.getWidth());
+        int y = random.nextInt(ControlPanel.getLenght());
         return (x +":"+y);
     }
 

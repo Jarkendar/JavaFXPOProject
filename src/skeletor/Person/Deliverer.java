@@ -27,56 +27,63 @@ public class Deliverer extends Human implements Runnable {
     @Override
     public void run() {
 //zabranie zamówienia
-        do {
-            synchronized (guardian){
-                getDelivererOrder(ControlPanel.getOrderLinkedList());
-            }
-            //kierowca czeka może pojawi się dla niego zamówienie
-            try{
-                sleep(1000);
-            }catch (InterruptedException e){
-                System.out.println(e);
-            }
-        }while (delivererOrder == null);
-        System.out.println(PESEL + " zabrałem zamówienie na ");
-        delivererOrder.displayOrder();
-        System.out.println();
+        Deliverer_Etique: do {
+            do {
+                synchronized (guardian) {
+                    getDelivererOrder(ControlPanel.getOrderLinkedList());
+                }
+                //kierowca czeka może pojawi się dla niego zamówienie
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
+                synchronized (guardian) {
+                    if (ControlPanel.getOrderLinkedList().size() == 0) {
+                        break Deliverer_Etique;
+                    }
+                }
+            } while (delivererOrder == null);
+            System.out.println(PESEL + " zabrałem zamówienie na ");
+            delivererOrder.displayOrder();
+            System.out.println();
 
 //zabranie pojazdu
-        do {
+            do {
+                synchronized (guardian) {
+                    getVehicleFromParking(ControlPanel.getVehicles());
+                }
+                //kierowca czeka chwilę może coś się zwolni
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (vehicle == null);
+//sprawdzenie poprawności zabierania pojazdu
             synchronized (guardian) {
-                getVehicleFromParking(ControlPanel.getVehicles());
+                System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
+                if (vehicle instanceof Car) {
+                    System.out.print("samochód");
+                }
+                if (vehicle instanceof Scooter) {
+                    System.out.print("skuter");
+                }
+                System.out.println(" mam uprawnienia na " + getCan_drive());
             }
-            //kierowca czeka chwilę może coś się zwolni
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } while (vehicle == null);
-//sprawdzenie poprawności zabierania pojazdu
-        synchronized (guardian) {
-            System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
-            if (vehicle instanceof Car){
-                System.out.print("samochód");
+            System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
+            synchronized (guardian) {
+                leaveVehicleOnParking(ControlPanel.getVehicles());
             }
-            if (vehicle instanceof Scooter){
-                System.out.print("skuter");
+            if (vehicle == null) {
+                System.out.println(PESEL + " teraz mam NULL");
             }
-            System.out.println(" mam uprawnienia na " + getCan_drive());
-        }
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(PESEL + " opuszczam "+ vehicle.getRegistration_number());
-        synchronized (guardian) {
-            leaveVehicleOnParking(ControlPanel.getVehicles());
-        }
-        if (vehicle == null) {
-            System.out.println(PESEL + " teraz mam NULL");
-        }
+        }while (true);
     }
 
     private void getDelivererOrder (LinkedList<Order> orders){
