@@ -44,9 +44,11 @@ public class Deliverer extends Human implements Runnable {
                     }
                 }
             } while (delivererOrder == null);
-            System.out.println(PESEL + " zabrałem zamówienie na ");
-            delivererOrder.displayOrder();
-            System.out.println();
+            synchronized (guardian) {
+                System.out.println(PESEL + " zabrałem zamówienie na ");
+                delivererOrder.displayOrder();
+                System.out.println();
+            }
 
 //zabranie pojazdu
             do {
@@ -106,7 +108,7 @@ public class Deliverer extends Human implements Runnable {
     }
 
     /**
-     * Metoda zostawiania/zwalniania pojazdu na parkingu restauracji.
+     * Metoda zostawiania/zwalniania pojazdu na parkingu restauracji i go tankuje.
      * @param vehicles lista pojazdów na parkingu
      */
     public void leaveVehicleOnParking(LinkedList<Vehicle> vehicles){

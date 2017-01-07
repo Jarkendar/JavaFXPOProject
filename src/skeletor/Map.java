@@ -16,9 +16,9 @@ public class Map {
         this.width = width;
         this.lenght = lenght;
         this.map = new int[width][lenght];
-        for (int x[] : map){
-            for(int y : x){
-                y = 0;
+        for (int i = 0; i<map.length; i++){
+            for(int j = 0; j<map[i].length; j++){
+                map[j][i] = 0;
             }
         }
         map[lRestaurant][wRestaurant] = 1;

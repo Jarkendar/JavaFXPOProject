@@ -24,6 +24,21 @@ public class ControlPanel {
 
     //zmienne regulujące
     private static int width = 50, lenght = 50, vehicleNumber = 30;
+    private static int lRestaurant, wRestaurant;
+
+    public static int getlRestaurant() {
+        return lRestaurant;
+    }
+
+    public static void setRestaurantPosition() {
+        Random random = new Random(System.nanoTime());
+        ControlPanel.wRestaurant = random.nextInt(getWidth());
+        ControlPanel.lRestaurant = random.nextInt(getLenght());
+    }
+
+    public static int getwRestaurant() {
+        return wRestaurant;
+    }
 
     public static int getVehicleNumber() {
         return vehicleNumber;
@@ -85,10 +100,9 @@ public class ControlPanel {
 
     public static void main(String[] args) {
         Object guardian = new Object();
+        setRestaurantPosition();
 
         Random random = new Random(System.nanoTime());
-        int wRestaurant = random.nextInt(getWidth());
-        int lRestaurant = random.nextInt(getLenght());
         LinkedList<Client> clients_list = new LinkedList<>();
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
         LinkedList<Meal> meals_list = new LinkedList<>();
