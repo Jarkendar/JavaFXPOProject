@@ -2,6 +2,7 @@ package skeletor.Person;
 
 import skeletor.ControlPanel;
 import skeletor.Enums.*;
+import skeletor.Order;
 import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
 import skeletor.Transport.Vehicle;
@@ -21,31 +22,86 @@ public class Deliverer extends Human implements Runnable {
     private E_Uprawnienia can_drive;
     private Vehicle vehicle = null;
     private final Object guardian;
+    private Order delivererOrder;
 
     @Override
     public void run() {
-        do {
-            getVehicleFromParking(ControlPanel.getVehicles());
-        } while (vehicle == null);
+//zabranie zamówienia
+        Deliverer_Etique: do {
+            do {
+                synchronized (guardian) {
+                    getDelivererOrder(ControlPanel.getOrderLinkedList());
+                }
+                //kierowca czeka może pojawi się dla niego zamówienie
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
+                synchronized (guardian) {
+                    if (ControlPanel.getOrderLinkedList().size() == 0) {
+                        break Deliverer_Etique;
+                    }
+                }
+            } while (delivererOrder == null);
+            System.out.println(PESEL + " zabrałem zamówienie na ");
+            delivererOrder.displayOrder();
+            System.out.println();
+
+//zabranie pojazdu
+            do {
+                synchronized (guardian) {
+                    getVehicleFromParking(ControlPanel.getVehicles());
+                }
+                //kierowca czeka chwilę może coś się zwolni
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } while (vehicle == null);
+//sprawdzenie poprawności zabierania pojazdu
+            synchronized (guardian) {
+                System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
+                if (vehicle instanceof Car) {
+                    System.out.print("samochód");
+                }
+                if (vehicle instanceof Scooter) {
+                    System.out.print("skuter");
+                }
+                System.out.println(" mam uprawnienia na " + getCan_drive());
+            }
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
+            synchronized (guardian) {
+                leaveVehicleOnParking(ControlPanel.getVehicles());
+            }
+            if (vehicle == null) {
+                System.out.println(PESEL + " teraz mam NULL");
+            }
+        }while (true);
+    }
+
+    private void getDelivererOrder (LinkedList<Order> orders){
         synchronized (guardian) {
-            System.out.print(PESEL + " zabrałem " + vehicle.getRegistration_number() + " ");
-            if (vehicle instanceof Car){
-                System.out.print("samochód");
+            for (int i = 0; i < orders.size(); i++) {
+                if (orders.get(i).getReadyTime() < System.currentTimeMillis()) {
+                    //zabezpieczenie przed wzięciem zamówienia za ciężkiego dla pozjadu na który ma uprawnienia
+                    if (this.getCan_drive().equals(E_Uprawnienia.skuter) && orders.get(i).calculateOrderWeight()<= 50.0){
+                        this.delivererOrder = orders.get(i);
+                        orders.remove(i);
+                        break;
+                    }else if (this.can_drive.equals(E_Uprawnienia.samochód) && orders.get(i).calculateOrderWeight() <= 100.0){
+                        this.delivererOrder = orders.get(i);
+                        orders.remove(i);
+                        break;
+                    }
+                }
             }
-            if (vehicle instanceof Scooter){
-                System.out.print("skuter");
-            }
-            System.out.println(" mam uprawnienia na " + getCan_drive());
-        }
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println(PESEL + " opuszczam "+ vehicle.getRegistration_number());
-        leaveVehicleOnParking(ControlPanel.getVehicles());
-        if (vehicle == null) {
-            System.out.println(PESEL + " teraz mam NULL");
         }
     }
 

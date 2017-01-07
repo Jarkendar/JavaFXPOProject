@@ -5,9 +5,11 @@ import skeletor.Food.Meal;
 import skeletor.Person.*;
 import skeletor.Transport.Vehicle;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
+import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 
 /**
@@ -21,6 +23,21 @@ public class ControlPanel {
     private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
     private static volatile LinkedList<Thread> threads = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
+
+    //zmienne regulujące
+    private static int width = 50, lenght = 50, vehicleNumber = 30;
+
+    public static int getVehicleNumber() {
+        return vehicleNumber;
+    }
+
+    public static int getWidth() {
+        return width;
+    }
+
+    public static int getLenght() {
+        return lenght;
+    }
 
     synchronized
     public static LinkedList<Vehicle> getVehicles() {
@@ -59,6 +76,7 @@ public class ControlPanel {
         ControlPanel.menu = menu;
     }
 
+    synchronized
     public static LinkedList<Order> getOrderLinkedList() {
         return orderLinkedList;
     }
@@ -70,13 +88,16 @@ public class ControlPanel {
     public static void main(String[] args) {
         Object guardian = new Object();
 
+        Random random = new Random(System.nanoTime());
+        int wRestaurant = random.nextInt(getWidth());
+        int lRestaurant = random.nextInt(getLenght());
         LinkedList<Client> clients_list = new LinkedList<>();
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
         LinkedList<Meal> meals_list = new LinkedList<>();
 
         RandomGenerator randomGenerator = new RandomGenerator();
 //***********TWORZENIE POJAZDÓW RESTAURACJI***********
-        randomGenerator.createVehicleForRestaurant(vehicles, 10);
+        randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
 //**********TWORZENIE LISTY KLIENTÓW**********************
         for (int i = 0 ; i<10; i++){
             randomGenerator.addRandomClient(clients_list);
@@ -106,7 +127,6 @@ public class ControlPanel {
             }
         }
 //***********TWORZENIE WSTĘPNEJ LISTY ZESTAWÓW OBIADOWYCH************
-        Random random = new Random(System.currentTimeMillis());
         for (int i = 0; i<10; i++){
             int count_of_meal = random.nextInt(4)+1;
             Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
@@ -161,6 +181,12 @@ public class ControlPanel {
 //        randomGenerator.displayClient(clients_list);
 //        randomGenerator.displayMeal(meals_list);
         randomGenerator.displayVehicle(vehicles);
+        System.out.println(orderLinkedList.size());
+
+        Map map = new Map(width,lenght, wRestaurant, lRestaurant);
+        System.out.flush();
+        map.addClientToMap(clients_list);
+        map.displayMap();
 
     }
 
