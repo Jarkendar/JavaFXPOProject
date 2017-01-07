@@ -5,11 +5,9 @@ import skeletor.Food.Meal;
 import skeletor.Person.*;
 import skeletor.Transport.Vehicle;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
-import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 
 /**
