@@ -73,6 +73,7 @@ public class Deliverer extends Human implements Runnable {
             int velocity = (int)(vehicle.getSpeed())/10;
             System.out.println("velocity = " +velocity);
             int tmpX = ControlPanel.getwRestaurant(), tmpY = ControlPanel.getlRestaurant();
+//dostarczenie zamówienia do klienta i powrót
             while (true){
                 synchronized (guardian) {
                     if (delivererOrder != null) {
@@ -117,6 +118,7 @@ public class Deliverer extends Human implements Runnable {
                 waitTime(5000);
                 System.out.println("skończyłem czekać");
             }
+//opuszczenie pojazdu
             waitTime(1000);
             System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
             synchronized (guardian) {
