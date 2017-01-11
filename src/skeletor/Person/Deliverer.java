@@ -35,11 +35,7 @@ public class Deliverer extends Human implements Runnable {
                     getDelivererOrder(ControlPanel.getOrderLinkedList());
                 }
                 //kierowca czeka może pojawi się dla niego zamówienie
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
+                waitTime(1000);
             } while (delivererOrder == null);
             synchronized (guardian) {
                 System.out.println(PESEL + " zabrałem zamówienie na ");
@@ -53,11 +49,7 @@ public class Deliverer extends Human implements Runnable {
                     getVehicleFromParking(ControlPanel.getVehicles());
                 }
                 //kierowca czeka chwilę może coś się zwolni
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                waitTime(1000);
             } while (vehicle == null);
 //sprawdzenie poprawności zabierania pojazdu
             synchronized (guardian) {
@@ -125,11 +117,7 @@ public class Deliverer extends Human implements Runnable {
                 waitTime(5000);
                 System.out.println("skończyłem czekać");
             }
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            waitTime(1000);
             System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
             synchronized (guardian) {
                 leaveVehicleOnParking(ControlPanel.getVehicles());
