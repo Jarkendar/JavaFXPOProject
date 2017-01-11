@@ -73,73 +73,39 @@ public class Deliverer extends Human implements Runnable {
             //dekompozycja adresu zamówienia
             String address = delivererOrder.getAddress();
             String[] coordinats = address.split(":");
-            System.out.println(address);
-            System.out.println(ControlPanel.getwRestaurant()+ " " + ControlPanel.getlRestaurant());
-            System.out.println(positionX + " " +positionY);
+            System.out.println("Mam jechać na " + address);
+            System.out.println("Restauracja jest na " +ControlPanel.getwRestaurant()+ " " + ControlPanel.getlRestaurant());
+            System.out.println("Jestem na "+ positionX + " " +positionY);
             int addressX = Integer.parseInt(coordinats[0]);
             int addressY = Integer.parseInt(coordinats[1]);
             int velocity = (int)(vehicle.getSpeed())/10;
             System.out.println("velocity = " +velocity);
             int tmpX, tmpY;
             while (true){
-                //ruch w prawo o maksymalną liczbę pól
-                if (addressX >= positionX + velocity){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX+velocity, positionY)){
-                        positionX +=velocity;
-                        System.out.println(PESEL+ " ruszyłem się pr");
+                if (delivererOrder != null) {
+                    //ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                    if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
+                        if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY)) {
+                            positionX += (addressX - positionX);
+                            System.out.println(PESEL + " ruszyłem się w pionie");
+                        }
+                    }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                    else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
+                        if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY))) {
+                            positionY += (addressY - positionY);
+                            System.out.println(PESEL + " ruszyłem się w poziomie");
+                        }
                     }
-                }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
-                else if (addressX < positionX+velocity && addressX >= positionX+(addressX-positionX) ){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX+(addressX-positionX),positionY)){
-                        positionX += (addressX-positionX);
-                        System.out.println(PESEL+ " ruszyłem się dół");
+                    System.out.println(positionX + "; " + positionY);
+                    System.out.println("czekam");
+                    waitTime(1000);
+                    System.out.println("skończyłem czekać");
+                    if ((addressX == positionX) && (addressY == positionY)) {
+                        ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
+                        giveOrderToClient();
+                        System.out.println(PESEL + " pora wrócić.");
+                        break;
                     }
-                }//ruch w lewo maksymalną liczbę pól
-                else if (addressX <= positionX-velocity){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX-velocity, positionY)){
-                        positionX -= velocity;
-                        System.out.println(PESEL+" ruszyłem się le");
-                    }
-                }//ruch w lewo o niepełną liczbę pól, mniejszą od maksymalnej
-                else if (addressX > positionX-velocity && addressX <= positionX-(positionX-addressX)){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX-(positionX-addressX), positionY)){
-                        positionX -= (positionX-addressX);
-                        System.out.println(PESEL+ " ruszyłem się l");
-                    }
-                }//ruch w dół o maksymalną liczbę pól
-                else if (addressY >= positionY + velocity){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX, positionY+velocity)){
-                        positionY += velocity;
-                        System.out.println(PESEL+ " ruszyłem się dó");
-                    }
-                }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
-                else if (addressY < positionY+velocity && addressY >= positionY+(addressY-positionY) ){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX,positionY+(addressY-positionY))){
-                        positionY += (addressY-positionY);
-                        System.out.println(PESEL+ " ruszyłem się prawo");
-                    }
-                }//ruch w górę o maksymalną liczbę pól
-                else if (addressY <= positionY-velocity){
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX, positionY-velocity)){
-                        positionY -= velocity;
-                        System.out.println(PESEL+" ruszyłem się gó");
-                    }
-                }//ruch w górę o niepełną liczbę pól, mniejszą od maksymalnej
-                else if (addressY > positionY-velocity && addressY <= positionY-(positionY-addressY)) {
-                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX , positionY-(positionY - addressY))) {
-                        positionY -= (positionY-addressY);
-                        System.out.println(PESEL + " ruszyłem się g");
-                    }
-                }
-                System.out.println(positionX + "; "+ positionY);
-                System.out.println("czekam");
-                waitTime(1000);
-                System.out.println("skończyłem czekać");
-                if ((addressX == positionX) && (addressY == positionY)){
-                    ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
-                    giveOrderToClient();
-                    System.out.println(PESEL + " pora wrócić.");
-                    break;
                 }
 
 

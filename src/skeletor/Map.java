@@ -37,6 +37,19 @@ public class Map {
             int width = Integer.parseInt(coordinats[0]);
             int lenght = Integer.parseInt(coordinats[1]);
             map[width][lenght] = 2;
+            if (width-1 >= 0){
+                map[width-1][lenght] = 0;
+            }
+            if (width+1 < map.length){
+                map[width+1][lenght] = 0;
+            }
+            if (lenght-1 >= 0){
+                map[width][lenght-1] = 0;
+            }
+            if (lenght+1 < map[width].length){
+                map[width][lenght+1] = 0;
+            }
+            displayMap();
         }
     }
 
@@ -59,7 +72,7 @@ public class Map {
                 }else if (oldY > posY){
                     posY++;
                 }
-                if (map[oldX][oldY] == 1) {
+                if (map[oldX][oldY] != 1) {
                     map[oldX][oldY] = 0;
                 }
                 map[posX][posY] = 3;
