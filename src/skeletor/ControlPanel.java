@@ -17,14 +17,30 @@ public class ControlPanel {
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
 
+    private static volatile Map map;
     private static volatile LinkedList<DinnerKit> menu = new LinkedList<>();
     private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
     private static volatile LinkedList<Thread> threads = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
+    private static volatile LinkedList<Client> clients_list = new LinkedList<>();
 
     //zmienne regulujące
-    private static int width = 50, lenght = 50, vehicleNumber = 30;
+    private static int width = 10, lenght = 20, vehicleNumber = 30;
     private static int lRestaurant, wRestaurant;
+
+    public static Map getMap(){
+        return map;
+    }
+
+
+    public static LinkedList<Client> getClients_list() {
+        return clients_list;
+    }
+
+    public static void setClients_list(LinkedList<Client> clients_list) {
+        ControlPanel.clients_list = clients_list;
+    }
+
 
     public static int getlRestaurant() {
         return lRestaurant;
@@ -103,7 +119,7 @@ public class ControlPanel {
         setRestaurantPosition();
 
         Random random = new Random(System.nanoTime());
-        LinkedList<Client> clients_list = new LinkedList<>();
+
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
         LinkedList<Meal> meals_list = new LinkedList<>();
 
@@ -111,7 +127,7 @@ public class ControlPanel {
 //***********TWORZENIE POJAZDÓW RESTAURACJI***********
         randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
 //**********TWORZENIE LISTY KLIENTÓW**********************
-        for (int i = 0 ; i<10; i++){
+        for (int i = 0 ; i<1; i++){
             randomGenerator.addRandomClient(clients_list);
             //zabezpieczenie przed losowanie zmiennych o tym samym seedzie randoma
             try {
@@ -121,7 +137,7 @@ public class ControlPanel {
             }
         }
 //***********TWORZENIE LISTY DOSTAWCÓW*******************
-        for (int i = 0; i<50; i++){
+        for (int i = 0; i<100; i++){
             randomGenerator.addRandomDeliverer(deliverers_list, guardian);
             try{
                 sleep(1);
@@ -168,6 +184,11 @@ public class ControlPanel {
         for (int i = 0; i<deliverers_list.size(); i++){
             getThreads().addLast(new Thread(deliverers_list.get(i)));
         }
+
+//********TWORZENIE MAPY***********************
+        map = new Map(width,lenght, wRestaurant, lRestaurant);
+        map.addClientToMap(clients_list);
+        map.displayMap();
 //**********ODPALENIE WĄTKÓW WSZYSTKICH**************
         for (int i = 0; i<getThreads().size(); i++){
             getThreads().get(i).start();
@@ -195,10 +216,7 @@ public class ControlPanel {
         randomGenerator.displayVehicle(vehicles);
         System.out.println(orderLinkedList.size());
 
-        Map map = new Map(width,lenght, wRestaurant, lRestaurant);
-        System.out.flush();
-        map.addClientToMap(clients_list);
-        map.displayMap();
+
 
     }
 

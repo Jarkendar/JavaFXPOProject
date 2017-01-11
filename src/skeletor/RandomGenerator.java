@@ -319,7 +319,8 @@ public class RandomGenerator {
         if (type) uprawnienia = E_Uprawnienia.samochód;
         else uprawnienia = E_Uprawnienia.skuter;
 
-        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia, guardian);
+        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork
+                ,daysWork,uprawnienia, guardian, ControlPanel.getwRestaurant(), ControlPanel.getlRestaurant());
 
         deliverers.addLast(deliverer);
 

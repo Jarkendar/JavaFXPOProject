@@ -1,5 +1,6 @@
 package skeletor.Person;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
 import skeletor.ControlPanel;
 import skeletor.DinnerKit;
 import skeletor.Order;
@@ -21,6 +22,7 @@ public abstract class Client extends Human implements Runnable {
     private long time_order;
     private String address;
     private String email = "";
+    private Order myOrder;
 
     @Override
     public void run() {
@@ -41,6 +43,13 @@ public abstract class Client extends Human implements Runnable {
                 }
                 Order order = new Order(ControlPanel.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
                 ControlPanel.addOrderToList(order);
+
+                myOrder = order;
+
+                while (myOrder!=null){
+                    sleep(1000);
+                }
+
             }catch (InterruptedException e){
                 System.out.println(e);
             }
@@ -50,7 +59,14 @@ public abstract class Client extends Human implements Runnable {
         }
     }
 
+    public Order getMyOrder(){
+        return myOrder;
+    }
 
+    public void getMyOrderFromDeliverer(){
+        System.out.println("Zabieram zamówienie");
+        myOrder = null;
+    }
 
     /**
      * Konstruktor klasy Client Human bez adresu email

@@ -23,6 +23,8 @@ public class Deliverer extends Human implements Runnable {
     private Vehicle vehicle = null;
     private final Object guardian;
     private Order delivererOrder;
+    private int positionX;
+    private int positionY;
 
     @Override
     public void run() {
@@ -37,11 +39,6 @@ public class Deliverer extends Human implements Runnable {
                     sleep(1000);
                 } catch (InterruptedException e) {
                     System.out.println(e);
-                }
-                synchronized (guardian) {
-                    if (ControlPanel.getOrderLinkedList().size() == 0) {
-                        break Deliverer_Etique;
-                    }
                 }
             } while (delivererOrder == null);
             synchronized (guardian) {
@@ -73,6 +70,80 @@ public class Deliverer extends Human implements Runnable {
                 }
                 System.out.println(" mam uprawnienia na " + getCan_drive());
             }
+            //dekompozycja adresu zamówienia
+            String address = delivererOrder.getAddress();
+            String[] coordinats = address.split(":");
+            System.out.println(address);
+            System.out.println(ControlPanel.getwRestaurant()+ " " + ControlPanel.getlRestaurant());
+            System.out.println(positionX + " " +positionY);
+            int addressX = Integer.parseInt(coordinats[0]);
+            int addressY = Integer.parseInt(coordinats[1]);
+            int velocity = (int)(vehicle.getSpeed())/10;
+            System.out.println("velocity = " +velocity);
+            int tmpX, tmpY;
+            while (true){
+                //ruch w prawo o maksymalną liczbę pól
+                if (addressX >= positionX + velocity){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX+velocity, positionY)){
+                        positionX +=velocity;
+                        System.out.println(PESEL+ " ruszyłem się pr");
+                    }
+                }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                else if (addressX < positionX+velocity && addressX >= positionX+(addressX-positionX) ){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX+(addressX-positionX),positionY)){
+                        positionX += (addressX-positionX);
+                        System.out.println(PESEL+ " ruszyłem się dół");
+                    }
+                }//ruch w lewo maksymalną liczbę pól
+                else if (addressX <= positionX-velocity){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX-velocity, positionY)){
+                        positionX -= velocity;
+                        System.out.println(PESEL+" ruszyłem się le");
+                    }
+                }//ruch w lewo o niepełną liczbę pól, mniejszą od maksymalnej
+                else if (addressX > positionX-velocity && addressX <= positionX-(positionX-addressX)){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX-(positionX-addressX), positionY)){
+                        positionX -= (positionX-addressX);
+                        System.out.println(PESEL+ " ruszyłem się l");
+                    }
+                }//ruch w dół o maksymalną liczbę pól
+                else if (addressY >= positionY + velocity){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX, positionY+velocity)){
+                        positionY += velocity;
+                        System.out.println(PESEL+ " ruszyłem się dó");
+                    }
+                }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                else if (addressY < positionY+velocity && addressY >= positionY+(addressY-positionY) ){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX,positionY+(addressY-positionY))){
+                        positionY += (addressY-positionY);
+                        System.out.println(PESEL+ " ruszyłem się prawo");
+                    }
+                }//ruch w górę o maksymalną liczbę pól
+                else if (addressY <= positionY-velocity){
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX, positionY-velocity)){
+                        positionY -= velocity;
+                        System.out.println(PESEL+" ruszyłem się gó");
+                    }
+                }//ruch w górę o niepełną liczbę pól, mniejszą od maksymalnej
+                else if (addressY > positionY-velocity && addressY <= positionY-(positionY-addressY)) {
+                    if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY,positionX , positionY-(positionY - addressY))) {
+                        positionY -= (positionY-addressY);
+                        System.out.println(PESEL + " ruszyłem się g");
+                    }
+                }
+                System.out.println(positionX + "; "+ positionY);
+                System.out.println("czekam");
+                waitTime(1000);
+                System.out.println("skończyłem czekać");
+                if ((addressX == positionX) && (addressY == positionY)){
+                    ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
+                    giveOrderToClient();
+                    System.out.println(PESEL + " pora wrócić.");
+                    break;
+                }
+
+
+            }
             try {
                 sleep(1000);
             } catch (InterruptedException e) {
@@ -88,22 +159,43 @@ public class Deliverer extends Human implements Runnable {
         }while (true);
     }
 
+    private void giveOrderToClient(){
+        for (Client x: ControlPanel.getClients_list()){
+            if (x.getMyOrder() == delivererOrder){
+                x.getMyOrderFromDeliverer();
+                delivererOrder = null;
+                System.out.println(PESEL+ " dałem klientowi zamówienie.");
+                break;
+            }
+        }
+    }
+
     private void getDelivererOrder (LinkedList<Order> orders){
         synchronized (guardian) {
             for (int i = 0; i < orders.size(); i++) {
                 if (orders.get(i).getReadyTime() < System.currentTimeMillis()) {
-                    //zabezpieczenie przed wzięciem zamówienia za ciężkiego dla pozjadu na który ma uprawnienia
+                    //zabezpieczenie przed wzięciem zamówienia za ciężkiego dla pojazdu na który ma uprawnienia
                     if (this.getCan_drive().equals(E_Uprawnienia.skuter) && orders.get(i).calculateOrderWeight()<= 50.0){
                         this.delivererOrder = orders.get(i);
                         orders.remove(i);
+                        System.out.println("Zabrałem zamówienie");
                         break;
                     }else if (this.can_drive.equals(E_Uprawnienia.samochód) && orders.get(i).calculateOrderWeight() <= 100.0){
                         this.delivererOrder = orders.get(i);
                         orders.remove(i);
+                        System.out.println("Zabrałem zamówienie");
                         break;
                     }
                 }
             }
+        }
+    }
+
+    private void waitTime(int time){
+        try {
+            sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -163,13 +255,15 @@ public class Deliverer extends Human implements Runnable {
      */
     public Deliverer(String name, String subname,
                      long PESEL, int[] work_hour,
-                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian){
+                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian, int positionX, int positionY){
         super(name, subname);
         this.PESEL = PESEL;
         this.work_day = work_day;
         this.work_hour = work_hour;
         this.can_drive = can_drive;
         this.guardian = guardian;
+        this.positionX = positionX;
+        this.positionY = positionY;
     }
 
 
