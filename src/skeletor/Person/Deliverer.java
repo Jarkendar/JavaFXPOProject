@@ -80,35 +80,50 @@ public class Deliverer extends Human implements Runnable {
             int addressY = Integer.parseInt(coordinats[1]);
             int velocity = (int)(vehicle.getSpeed())/10;
             System.out.println("velocity = " +velocity);
-            int tmpX, tmpY;
+            int tmpX = ControlPanel.getwRestaurant(), tmpY = ControlPanel.getlRestaurant();
             while (true){
-                if (delivererOrder != null) {
-                    //ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
-                    if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
-                        if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY)) {
-                            positionX += (addressX - positionX);
-                            System.out.println(PESEL + " ruszyłem się w pionie");
+                synchronized (guardian) {
+                    if (delivererOrder != null) {
+                        //ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                        if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
+                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
+                                positionX += (addressX - positionX);
+                                System.out.println(PESEL + " ruszyłem się w pionie");
+                            }
+                        }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                        else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
+                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
+                                positionY += (addressY - positionY);
+                                System.out.println(PESEL + " ruszyłem się w poziomie");
+                            }
                         }
-                    }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
-                    else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
-                        if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY))) {
-                            positionY += (addressY - positionY);
-                            System.out.println(PESEL + " ruszyłem się w poziomie");
+                        if ((addressX == positionX) && (addressY == positionY)) {
+                            ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
+                            giveOrderToClient();
+                            System.out.println(PESEL + " pora wrócić.");
                         }
-                    }
-                    System.out.println(positionX + "; " + positionY);
-                    System.out.println("czekam");
-                    waitTime(1000);
-                    System.out.println("skończyłem czekać");
-                    if ((addressX == positionX) && (addressY == positionY)) {
-                        ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
-                        giveOrderToClient();
-                        System.out.println(PESEL + " pora wrócić.");
-                        break;
+                    } else if (delivererOrder == null) {
+                        if (tmpX != positionX && tmpX >= positionX + (tmpX - positionX)) {
+                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
+                                positionX += (tmpX - positionX);
+                                System.out.println(PESEL + " wracam w pionie.");
+                            }
+                        } else if (tmpY != positionY && tmpY >= positionY + (tmpY - positionY)) {
+                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (tmpY - positionY), guardian)) {
+                                positionY += (tmpY - positionY);
+                                System.out.println(PESEL + " wracam w poziomie.");
+                            }
+                        }
+                        if (tmpX == positionX && tmpY == positionY) {
+                            System.out.println("Wróciłem do restauracji");
+                            break;
+                        }
                     }
                 }
-
-
+                System.out.println(positionX + "; " + positionY);
+                System.out.println("czekam");
+                waitTime(5000);
+                System.out.println("skończyłem czekać");
             }
             try {
                 sleep(1000);

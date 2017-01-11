@@ -53,8 +53,8 @@ public class Map {
         }
     }
 
-    public boolean setDelivererPositionOnMap(int oldX, int oldY, int posX, int posY){
-        synchronized (this) {
+    public boolean setDelivererPositionOnMap(int oldX, int oldY, int posX, int posY, Object guardian){
+        synchronized (guardian) {
             if (map[posX][posY] == 0) {
                 if (map[oldX][oldY] != 1) {
                     map[oldX][oldY] = 0;
