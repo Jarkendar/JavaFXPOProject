@@ -94,12 +94,14 @@ public class Deliverer extends Human implements Runnable {
                         if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
                                 positionX += (addressX - positionX);
+                                vehicle.burnGasoline();
                                 System.out.println(PESEL + " ruszyłem się w pionie");
                             }
                         }
                         else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
                                 positionY += (addressY - positionY);
+                                vehicle.burnGasoline();
                                 System.out.println(PESEL + " ruszyłem się w poziomie");
                             }
                         }//oddanie zamówienia klientowi
@@ -113,11 +115,13 @@ public class Deliverer extends Human implements Runnable {
                         if (tmpX != positionX && tmpX >= positionX + (tmpX - positionX)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
                                 positionX += (tmpX - positionX);
+                                vehicle.burnGasoline();
                                 System.out.println(PESEL + " wracam w pionie.");
                             }
                         } else if (tmpY != positionY && tmpY >= positionY + (tmpY - positionY)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (tmpY - positionY), guardian)) {
                                 positionY += (tmpY - positionY);
+                                vehicle.burnGasoline();
                                 System.out.println(PESEL + " wracam w poziomie.");
                             }
                         }
@@ -126,6 +130,7 @@ public class Deliverer extends Human implements Runnable {
                             break;
                         }
                     }
+                    System.out.println(PESEL + " aktualny stan paliwa " +vehicle.getActualTankValue());
                 }
                 System.out.println(PESEL + " " + positionX + "; " + positionY);
                 System.out.println("czekam");

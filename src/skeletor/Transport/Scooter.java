@@ -24,6 +24,6 @@ public class Scooter extends Vehicle {
      */
     @Override
     public void burnGasoline() {
-        setActualTankValue(getTank_max_value()-(float) 0.03);
+        setActualTankValue(getActualTankValue()-(float) 0.03);
     }
 }

@@ -24,6 +24,6 @@ public class Car extends Vehicle {
      */
     @Override
     public void burnGasoline() {
-        setActualTankValue(getTank_max_value()-(float) 0.09);
+        setActualTankValue(getActualTankValue()-(float) 0.09);
     }
 }
