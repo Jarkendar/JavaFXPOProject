@@ -5,11 +5,9 @@ import skeletor.Food.Meal;
 import skeletor.Person.*;
 import skeletor.Transport.Vehicle;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
-import static java.lang.Thread.interrupted;
 import static java.lang.Thread.sleep;
 
 /**
@@ -19,13 +17,44 @@ public class ControlPanel {
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
 
+    private static volatile Map map;
     private static volatile LinkedList<DinnerKit> menu = new LinkedList<>();
     private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
     private static volatile LinkedList<Thread> threads = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
+    private static volatile LinkedList<Client> clients_list = new LinkedList<>();
 
     //zmienne regulujące
-    private static int width = 50, lenght = 50, vehicleNumber = 30;
+    private static int width = 10, lenght = 20, vehicleNumber = 30;
+    private static int lRestaurant, wRestaurant;
+
+    public static Map getMap(){
+        return map;
+    }
+
+
+    public static LinkedList<Client> getClients_list() {
+        return clients_list;
+    }
+
+    public static void setClients_list(LinkedList<Client> clients_list) {
+        ControlPanel.clients_list = clients_list;
+    }
+
+
+    public static int getlRestaurant() {
+        return lRestaurant;
+    }
+
+    public static void setRestaurantPosition() {
+        Random random = new Random(System.nanoTime());
+        ControlPanel.wRestaurant = random.nextInt(getWidth());
+        ControlPanel.lRestaurant = random.nextInt(getLenght());
+    }
+
+    public static int getwRestaurant() {
+        return wRestaurant;
+    }
 
     public static int getVehicleNumber() {
         return vehicleNumber;
@@ -85,13 +114,20 @@ public class ControlPanel {
         ControlPanel.orderLinkedList = orderLinkedList;
     }
 
+    public static LinkedList<Thread> getThreads() {
+        return threads;
+    }
+
+    public static void setThreads(LinkedList<Thread> threads) {
+        ControlPanel.threads = threads;
+    }
+
     public static void main(String[] args) {
         Object guardian = new Object();
+        setRestaurantPosition();
 
         Random random = new Random(System.nanoTime());
-        int wRestaurant = random.nextInt(getWidth());
-        int lRestaurant = random.nextInt(getLenght());
-        LinkedList<Client> clients_list = new LinkedList<>();
+
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
         LinkedList<Meal> meals_list = new LinkedList<>();
 
@@ -99,7 +135,7 @@ public class ControlPanel {
 //***********TWORZENIE POJAZDÓW RESTAURACJI***********
         randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
 //**********TWORZENIE LISTY KLIENTÓW**********************
-        for (int i = 0 ; i<10; i++){
+        for (int i = 0 ; i<5; i++){
             randomGenerator.addRandomClient(clients_list);
             //zabezpieczenie przed losowanie zmiennych o tym samym seedzie randoma
             try {
@@ -109,7 +145,7 @@ public class ControlPanel {
             }
         }
 //***********TWORZENIE LISTY DOSTAWCÓW*******************
-        for (int i = 0; i<50; i++){
+        for (int i = 0; i<10; i++){
             randomGenerator.addRandomDeliverer(deliverers_list, guardian);
             try{
                 sleep(1);
@@ -156,11 +192,15 @@ public class ControlPanel {
         for (int i = 0; i<deliverers_list.size(); i++){
             getThreads().addLast(new Thread(deliverers_list.get(i)));
         }
+
+//********TWORZENIE MAPY***********************
+        map = new Map(width,lenght, wRestaurant, lRestaurant);
+        map.addClientToMap(clients_list);
+        map.displayMap();
 //**********ODPALENIE WĄTKÓW WSZYSTKICH**************
         for (int i = 0; i<getThreads().size(); i++){
             getThreads().get(i).start();
         }
-
 
 //***********PĘTLA CZEKANIA NA WSZYSTKIE WĄTKI********
         while (getThreads().size() != 0){
@@ -172,8 +212,6 @@ public class ControlPanel {
             clearThreadListFromEndProcess();
         }
 
-
-
         for (Order x: orderLinkedList){
             x.displayOrder();
         }
@@ -182,20 +220,5 @@ public class ControlPanel {
 //        randomGenerator.displayMeal(meals_list);
         randomGenerator.displayVehicle(vehicles);
         System.out.println(orderLinkedList.size());
-
-        Map map = new Map(width,lenght, wRestaurant, lRestaurant);
-        System.out.flush();
-        map.addClientToMap(clients_list);
-        map.displayMap();
-
-    }
-
-
-    public static LinkedList<Thread> getThreads() {
-        return threads;
-    }
-
-    public static void setThreads(LinkedList<Thread> threads) {
-        ControlPanel.threads = threads;
     }
 }

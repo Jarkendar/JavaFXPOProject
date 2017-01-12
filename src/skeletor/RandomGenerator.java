@@ -319,7 +319,8 @@ public class RandomGenerator {
         if (type) uprawnienia = E_Uprawnienia.samochód;
         else uprawnienia = E_Uprawnienia.skuter;
 
-        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork,daysWork,uprawnienia, guardian);
+        Deliverer deliverer = new Deliverer(name,surname,numberPESEL,hoursWork
+                ,daysWork,uprawnienia, guardian, ControlPanel.getwRestaurant(), ControlPanel.getlRestaurant());
 
         deliverers.addLast(deliverer);
 
@@ -604,8 +605,11 @@ public class RandomGenerator {
      */
     private String generateAddress(){
         Random random = new Random(System.currentTimeMillis());
-        int x = random.nextInt(ControlPanel.getWidth());
-        int y = random.nextInt(ControlPanel.getLenght());
+        int x = 0, y=0;
+        do {
+            x = random.nextInt(ControlPanel.getWidth());
+            y = random.nextInt(ControlPanel.getLenght());
+        }while (x == ControlPanel.getwRestaurant() || y == ControlPanel.getlRestaurant());
         return (x +":"+y);
     }
 

@@ -24,7 +24,7 @@ public class Order {
                 }
             }
         }
-        this.readyTime = maxPreparationTime*1000 + orderTime;
+        this.readyTime = maxPreparationTime*10 + orderTime;
     }
 
 
