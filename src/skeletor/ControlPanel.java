@@ -32,7 +32,6 @@ public class ControlPanel {
         return map;
     }
 
-
     public static LinkedList<Client> getClients_list() {
         return clients_list;
     }
@@ -40,7 +39,6 @@ public class ControlPanel {
     public static void setClients_list(LinkedList<Client> clients_list) {
         ControlPanel.clients_list = clients_list;
     }
-
 
     public static int getlRestaurant() {
         return lRestaurant;

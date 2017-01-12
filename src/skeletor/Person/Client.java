@@ -1,10 +1,8 @@
 package skeletor.Person;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import skeletor.ControlPanel;
 import skeletor.DinnerKit;
 import skeletor.Order;
-import skeletor.RandomGenerator;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -29,29 +27,27 @@ public abstract class Client extends Human implements Runnable {
         int number_of_try = 0;
         Random random = new Random(System.nanoTime());
         while (true){
+            //czas na zastanowienie i złożenie zamówienia
             int wait_time = random.nextInt(5000)+1000;
+            waitTime(wait_time);
 
-            try {
-                sleep(wait_time);
-                LinkedList<DinnerKit> tmpmenu = ControlPanel.getMenu();
+            LinkedList<DinnerKit> tmpmenu = ControlPanel.getMenu();
 
-                int countChoose = random.nextInt(3)+1;
-                DinnerKit[] dinnerKits = new DinnerKit[countChoose];
-                for (int i = 0 ; i<countChoose; i++){
-                    int chooseKit = random.nextInt(tmpmenu.size());
-                    dinnerKits[i] = tmpmenu.get(chooseKit);
-                }
-                Order order = new Order(ControlPanel.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
-                ControlPanel.addOrderToList(order);
+            //tworzenie zamówienia
+            int countChoose = random.nextInt(3)+1;
+            DinnerKit[] dinnerKits = new DinnerKit[countChoose];
+            for (int i = 0 ; i<countChoose; i++){
+                int chooseKit = random.nextInt(tmpmenu.size());
+                dinnerKits[i] = tmpmenu.get(chooseKit);
+            }
+            Order order = new Order(ControlPanel.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
+            ControlPanel.addOrderToList(order);//dodanie zamówienia do listy zamówień
 
-                myOrder = order;
+            myOrder = order;
 
-                while (myOrder!=null){
-                    sleep(1000);
-                }
-
-            }catch (InterruptedException e){
-                System.out.println(e);
+            //czekanie na dostarczenie zamówienia
+            while (myOrder!=null){
+                waitTime(1000);
             }
 
             if (number_of_try == 10) break;
@@ -59,12 +55,27 @@ public abstract class Client extends Human implements Runnable {
         }
     }
 
+    /**
+     * Metoda czekania określoną liczbę milisekund.
+     * @param time czas czekania w milisekundach
+     */
+    private void waitTime(int time){
+        try {
+            sleep(time);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Order getMyOrder(){
         return myOrder;
     }
 
+    /**
+     * Metoda wywoływana po dostarczeniu zamówienia przez dostawcę. Dostarczenie zamówienia.
+     */
     public void getMyOrderFromDeliverer(){
-        System.out.println("Zabieram zamówienie");
+        System.out.println("Zabieram dostarczone zamówienie");
         myOrder = null;
     }
 

@@ -40,11 +40,11 @@ public class Deliverer extends Human implements Runnable {
             }
 //zabieranie zamówienia
             do {
+                //dostawca idzie sprawdzić czy są jakieś zamówienia, którymi może się zająć
+                waitTime(1000);
                 synchronized (guardian) {
                     getDelivererOrder(ControlPanel.getOrderLinkedList());
                 }
-                //kierowca czeka może pojawi się dla niego zamówienie
-                waitTime(1000);
             } while (delivererOrder == null);
             synchronized (guardian) {
                 System.out.println(PESEL + " zabrałem zamówienie na ");
@@ -52,13 +52,14 @@ public class Deliverer extends Human implements Runnable {
                 System.out.println();
             }
 
-//zabranie pojazdu
+//zabranie pojazdu z parkingu Restauracji
             do {
+                //dostawca idzie sprawdzić czy na parkingu stoją jakieś pojazdy którymi może prowadzić
+                waitTime(1000);
                 synchronized (guardian) {
                     getVehicleFromParking(ControlPanel.getVehicles());
                 }
-                //kierowca czeka chwilę może coś się zwolni
-                waitTime(1000);
+
             } while (vehicle == null);
 //sprawdzenie poprawności zabierania pojazdu
             synchronized (guardian) {
@@ -71,12 +72,15 @@ public class Deliverer extends Human implements Runnable {
                 }
                 System.out.println(" mam uprawnienia na " + getCan_drive());
             }
+
             //dekompozycja adresu zamówienia
             String address = delivererOrder.getAddress();
             String[] coordinats = address.split(":");
+
             System.out.println("Mam jechać na " + address);
             System.out.println("Restauracja jest na " +ControlPanel.getwRestaurant()+ " " + ControlPanel.getlRestaurant());
             System.out.println("Jestem na "+ positionX + " " +positionY);
+
             int addressX = Integer.parseInt(coordinats[0]);
             int addressY = Integer.parseInt(coordinats[1]);
             int velocity = (int)(vehicle.getSpeed())/10;
@@ -128,7 +132,7 @@ public class Deliverer extends Human implements Runnable {
                 waitTime(5000);//symulacja tur
                 System.out.println("skończyłem czekać");
             }
-//opuszczenie pojazdu
+//opuszczenie pojazdu przez dostawcę
             waitTime(1000);
             System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
             synchronized (guardian) {
@@ -148,8 +152,7 @@ public class Deliverer extends Human implements Runnable {
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         boolean canHour = false, canDay = false;
-        Etiq_day:
-        for (int i = 0; i<work_day.length; i++){
+        Etiq_day:for (int i = 0; i<work_day.length; i++){
             switch (work_day[i]){
                 case niedziela:{
                     if (day == 1) {
@@ -245,6 +248,10 @@ public class Deliverer extends Human implements Runnable {
         }
     }
 
+    /**
+     * Metoda czekania określoną liczbę milisekund.
+     * @param time czas czekania w milisekundach
+     */
     private void waitTime(int time){
         try {
             sleep(time);
