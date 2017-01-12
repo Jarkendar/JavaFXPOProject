@@ -1,7 +1,10 @@
-package sample;
+package packetGUI;
 
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+
+import java.awt.event.ActionEvent;
+import java.beans.EventHandler;
 
 public class Controller {
 
@@ -20,7 +23,16 @@ public class Controller {
     public javafx.scene.control.Label label_Count_Client;
     public javafx.scene.control.Label label_Count_Deliverer;
 
+    /**
+     * Tutaj inicjalizuje się wszystkie zmienne.
+     */
+    public void initialize(){
+     //   EventHandler handler = new EventHandler(){};//tworzenie uchwytu dla akcji
+
+    }
+
     public void addClient(MouseEvent mouseEvent) {
+        mouseEvent.getSource();//wyciąganie elementu na którym została wykonana akcji
         label_Count_Client.setText(Integer.toString(Integer.parseInt(label_Count_Client.getText())+1));
     }
 
