@@ -7,6 +7,8 @@ import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
 import skeletor.Transport.Vehicle;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 import static java.lang.Thread.sleep;
@@ -30,6 +32,13 @@ public class Deliverer extends Human implements Runnable {
     public void run() {
 //zabranie zamówienia
         Deliverer_Etique: do {
+
+//pętla czekania, jeśli kierowca nie pracuje o aktualnej godzinie, aktualnego dnia to czeka
+            while (!canWork()){
+                System.out.println(PESEL + " Mam wolne.");
+                waitTime(60000);
+            }
+//zabieranie zamówienia
             do {
                 synchronized (guardian) {
                     getDelivererOrder(ControlPanel.getOrderLinkedList());
@@ -76,26 +85,27 @@ public class Deliverer extends Human implements Runnable {
 //dostarczenie zamówienia do klienta i powrót
             while (true){
                 synchronized (guardian) {
+                    //dojazd do klienta z zamówieniem
                     if (delivererOrder != null) {
-                        //ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
                         if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
                                 positionX += (addressX - positionX);
                                 System.out.println(PESEL + " ruszyłem się w pionie");
                             }
-                        }//ruch w dół o niepełną liczbę pól, mniejszą od maksymalnej
+                        }
                         else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
                                 positionY += (addressY - positionY);
                                 System.out.println(PESEL + " ruszyłem się w poziomie");
                             }
-                        }
+                        }//oddanie zamówienia klientowi
                         if ((addressX == positionX) && (addressY == positionY)) {
                             ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
                             giveOrderToClient();
                             System.out.println(PESEL + " pora wrócić.");
                         }
-                    } else if (delivererOrder == null) {
+                    }//powrót do restauracji z pustym bagażem
+                    else if (delivererOrder == null) {
                         if (tmpX != positionX && tmpX >= positionX + (tmpX - positionX)) {
                             if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
                                 positionX += (tmpX - positionX);
@@ -113,9 +123,9 @@ public class Deliverer extends Human implements Runnable {
                         }
                     }
                 }
-                System.out.println(positionX + "; " + positionY);
+                System.out.println(PESEL + " " + positionX + "; " + positionY);
                 System.out.println("czekam");
-                waitTime(5000);
+                waitTime(5000);//symulacja tur
                 System.out.println("skończyłem czekać");
             }
 //opuszczenie pojazdu
@@ -124,23 +134,96 @@ public class Deliverer extends Human implements Runnable {
             synchronized (guardian) {
                 leaveVehicleOnParking(ControlPanel.getVehicles());
             }
-            if (vehicle == null) {
-                System.out.println(PESEL + " teraz mam NULL");
-            }
         }while (true);
     }
 
-    private void giveOrderToClient(){
-        for (Client x: ControlPanel.getClients_list()){
-            if (x.getMyOrder() == delivererOrder){
-                x.getMyOrderFromDeliverer();
-                delivererOrder = null;
-                System.out.println(PESEL+ " dałem klientowi zamówienie.");
+    /**
+     * Metoda sprawdza czy kierowca może wziąść zamówienie, a potem je rozwieść. Sprawdza czy kierowca pracuje.
+     * @return wartość true - jeśli kierowca pracuje w dany dzień o danej godzinie, false - w przeciwnym wypadku
+     */
+    private boolean canWork(){
+        Date date = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        int day = calendar.get(Calendar.DAY_OF_WEEK);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        boolean canHour = false, canDay = false;
+        Etiq_day:
+        for (int i = 0; i<work_day.length; i++){
+            switch (work_day[i]){
+                case niedziela:{
+                    if (day == 1) {
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case poniedziałek:{
+                    if (day == 2){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case wtorek:{
+                    if (day == 3){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case środa:{
+                    if (day == 4){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case czwartek:{
+                    if (day == 5){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case piątek:{
+                    if (day == 6){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+                case sobota:{
+                    if (day == 7){
+                        canDay = true;
+                        break Etiq_day;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i<work_hour.length; i++){
+            if (hour == work_hour[i]){
+                canHour = true;
                 break;
+            }
+        }
+        return (canDay && canHour);
+    }
+
+    /**
+     * Metoda szuka klienta, daje mu zamówienie i usuwa zamówienie z bagażu dostawcy.
+     */
+    private void giveOrderToClient(){
+        synchronized (guardian) {
+            for (Client x : ControlPanel.getClients_list()) {
+                if (x.getMyOrder() == delivererOrder) {
+                    x.getMyOrderFromDeliverer();
+                    delivererOrder = null;
+                    System.out.println(PESEL + " dałem klientowi zamówienie.");
+                    break;
+                }
             }
         }
     }
 
+    /**
+     * Metoda zabiera jedno zamówienie z listy zamówień, sprawdza czy dostawca może je zabrać.
+     * @param orders lista zamówień
+     */
     private void getDelivererOrder (LinkedList<Order> orders){
         synchronized (guardian) {
             for (int i = 0; i < orders.size(); i++) {

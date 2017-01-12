@@ -29,7 +29,7 @@ public abstract class Client extends Human implements Runnable {
         int number_of_try = 0;
         Random random = new Random(System.nanoTime());
         while (true){
-            int wait_time = random.nextInt(4)+1000;
+            int wait_time = random.nextInt(5000)+1000;
 
             try {
                 sleep(wait_time);

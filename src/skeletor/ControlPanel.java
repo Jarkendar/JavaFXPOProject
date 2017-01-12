@@ -114,6 +114,14 @@ public class ControlPanel {
         ControlPanel.orderLinkedList = orderLinkedList;
     }
 
+    public static LinkedList<Thread> getThreads() {
+        return threads;
+    }
+
+    public static void setThreads(LinkedList<Thread> threads) {
+        ControlPanel.threads = threads;
+    }
+
     public static void main(String[] args) {
         Object guardian = new Object();
         setRestaurantPosition();
@@ -127,7 +135,7 @@ public class ControlPanel {
 //***********TWORZENIE POJAZDÓW RESTAURACJI***********
         randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
 //**********TWORZENIE LISTY KLIENTÓW**********************
-        for (int i = 0 ; i<1; i++){
+        for (int i = 0 ; i<5; i++){
             randomGenerator.addRandomClient(clients_list);
             //zabezpieczenie przed losowanie zmiennych o tym samym seedzie randoma
             try {
@@ -137,7 +145,7 @@ public class ControlPanel {
             }
         }
 //***********TWORZENIE LISTY DOSTAWCÓW*******************
-        for (int i = 0; i<100; i++){
+        for (int i = 0; i<10; i++){
             randomGenerator.addRandomDeliverer(deliverers_list, guardian);
             try{
                 sleep(1);
@@ -194,7 +202,6 @@ public class ControlPanel {
             getThreads().get(i).start();
         }
 
-
 //***********PĘTLA CZEKANIA NA WSZYSTKIE WĄTKI********
         while (getThreads().size() != 0){
             try {
@@ -205,8 +212,6 @@ public class ControlPanel {
             clearThreadListFromEndProcess();
         }
 
-
-
         for (Order x: orderLinkedList){
             x.displayOrder();
         }
@@ -215,17 +220,5 @@ public class ControlPanel {
 //        randomGenerator.displayMeal(meals_list);
         randomGenerator.displayVehicle(vehicles);
         System.out.println(orderLinkedList.size());
-
-
-
-    }
-
-
-    public static LinkedList<Thread> getThreads() {
-        return threads;
-    }
-
-    public static void setThreads(LinkedList<Thread> threads) {
-        ControlPanel.threads = threads;
     }
 }

@@ -53,10 +53,21 @@ public class Map {
         }
     }
 
+    /**
+     * Metoda ustawia na mapie znacznik dostawcy. Wykonywać tę metodę może maksymalnie
+     * jeden dostawca w tym samym czasie. Stare współrzędne w macierzy w przypadku
+     * możliwości wykonania ruchu są ustawiane na 0;
+     * @param oldX stary rząd położenia dostawcy
+     * @param oldY stara kolumna położenia dostawcy
+     * @param posX nowy rząd położenia dostawcy
+     * @param posY nowa kolumna położenia dostawcy
+     * @param guardian obiekt strażnika pilnującego synchronizacji
+     * @return true - dostawca może się poruszyć na wskazane pole, false - jeśli pole docelowe jest zajęte
+     */
     public boolean setDelivererPositionOnMap(int oldX, int oldY, int posX, int posY, Object guardian){
         synchronized (guardian) {
             if (map[posX][posY] == 0) {
-                if (map[oldX][oldY] != 1) {
+                if (map[oldX][oldY] != 1 && map[oldX][oldY] != 2) {
                     map[oldX][oldY] = 0;
                 }
                 map[posX][posY] = 3;
@@ -72,13 +83,19 @@ public class Map {
                 }else if (oldY > posY){
                     posY++;
                 }
-                if (map[oldX][oldY] != 1) {
+                if (map[oldX][oldY] != 1 && map[oldX][oldY] != 2) {
                     map[oldX][oldY] = 0;
                 }
                 map[posX][posY] = 3;
                 displayMap();
                 return true;
-            }else{
+            }else if (map[posX][posY] == 1){
+                if (map[oldX][oldY] != 1 && map[oldX][oldY] != 2) {
+                    map[oldX][oldY] = 0;
+                    displayMap();
+                }
+                return true;
+            }else {
                 return false;
             }
         }
