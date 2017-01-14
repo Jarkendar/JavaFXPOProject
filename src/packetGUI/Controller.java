@@ -23,6 +23,8 @@ public class Controller {
     public javafx.scene.control.Label label_Count_Client;
     public javafx.scene.control.Label label_Count_Deliverer;
 
+
+
     /**
      * Tutaj inicjalizuje się wszystkie zmienne.
      */

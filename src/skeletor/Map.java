@@ -1,5 +1,6 @@
 package skeletor;
 
+import javafx.scene.control.Button;
 import skeletor.Person.Client;
 
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ public class Map {
     private int width;
     private int lenght;
     private int[][] map;
+    private Button[][] mapGUI;
 
     /**
      * Konstruktor mapy, wraz z ustawieniem pozycji restauracji
