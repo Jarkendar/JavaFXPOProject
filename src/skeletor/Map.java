@@ -2,6 +2,7 @@ package skeletor;
 
 import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import packetGUI.Main;
 import skeletor.Person.Client;
 
@@ -31,24 +32,50 @@ public class Map {
         map[wRestaurant][lRestaurant] = 1;
     }
 
+    /**
+     * Ustawianie macierzy przycisków do mapy
+     * @param mapGUI macierzy przycisków
+     */
+    synchronized
     public void setMapGUI(Button[][] mapGUI) {
         this.mapGUI = mapGUI;
         setRestaurantOnMap();
     }
 
-    private void setRestaurantOnMap() {
-        String restaurantCoordinate = Main.getwRestaurant() + "," + Main.getlRestaurant();
-        set_restaurant:
-        for (int i = 0; i < Main.getWidth(); i++) {
-            for (int k = 0; k < Main.getLenght(); k++) {
-                if (mapGUI[i][k].getId().equals(restaurantCoordinate)) {
-                    mapGUI[i][k].setTextFill(Color.WHITE);//ustawienie koloru wypełnienia
-                    mapGUI[i][k].setText("R");//ustawienie etykiety przycisku
-                    mapGUI[i][k].setStyle("-fx-background-color: #990000;");//ustawienie czerwonego tła przycisku
-                    break set_restaurant;//przerwanie, przecież jest tylko jedna restauracja
-                }
+    synchronized
+    public void setClientOnMap(LinkedList<Client> clientLinkedList){
+        for (int i = 0; i<Main.getWidth(); i++){
+            for (int k = 0; k<Main.getLenght(); k++){
+                mapGUI[i][k].setText("0");
+                mapGUI[i][k].setVisible(false);
+                mapGUI[i][k].setStyle("-fx-background-color: #fff;");
             }
         }
+
+        setRestaurantOnMap();
+
+        for (Client x : clientLinkedList) {
+            String address = x.getAddress();
+            String[] coordinats = address.split(":");
+            int width = Integer.parseInt(coordinats[0]);
+            int lenght = Integer.parseInt(coordinats[1]);
+            mapGUI[width][lenght].setText("K");
+            mapGUI[width][lenght].setVisible(true);
+            mapGUI[width][lenght].setTextFill(Color.WHITE);
+            mapGUI[width][lenght].setStyle("-fx-background-color: #00CC00;");
+        }
+    }
+
+    /**
+     * Metoda ustawia formatowanie przycisku symbolizującego restaurację.
+     */
+    synchronized
+    private void setRestaurantOnMap() {
+        mapGUI[Main.getwRestaurant()][Main.getlRestaurant()].setVisible(true);
+        mapGUI[Main.getwRestaurant()][Main.getlRestaurant()].setTextFill(Color.WHITE);//ustawienie koloru wypełnienia
+        mapGUI[Main.getwRestaurant()][Main.getlRestaurant()].setText("R");//ustawienie etykiety przycisku
+        mapGUI[Main.getwRestaurant()][Main.getlRestaurant()].setStyle("-fx-background-color: #990000;");//ustawienie czerwonego tła przycisku
+
     }
 
     /**
@@ -91,6 +118,7 @@ public class Map {
      * @param guardian obiekt strażnika pilnującego synchronizacji
      * @return true - dostawca może się poruszyć na wskazane pole, false - jeśli pole docelowe jest zajęte
      */
+    synchronized
     public boolean setDelivererPositionOnMap(int oldX, int oldY, int posX, int posY, Object guardian) {
         synchronized (guardian) {
             if (map[posX][posY] == 0) {

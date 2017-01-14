@@ -1,5 +1,6 @@
 package skeletor;
 
+import packetGUI.Main;
 import skeletor.Enums.*;
 import skeletor.Food.*;
 import skeletor.Person.*;
@@ -607,9 +608,9 @@ public class RandomGenerator {
         Random random = new Random(System.currentTimeMillis());
         int x = 0, y=0;
         do {
-            x = random.nextInt(ControlPanel.getWidth());
-            y = random.nextInt(ControlPanel.getLenght());
-        }while (x == ControlPanel.getwRestaurant() || y == ControlPanel.getlRestaurant());
+            x = random.nextInt(Main.getWidth());
+            y = random.nextInt(Main.getLenght());
+        }while (x == Main.getwRestaurant() || y == Main.getlRestaurant());
         return (x +":"+y);
     }
 

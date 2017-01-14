@@ -1,5 +1,6 @@
 package skeletor.Person;
 
+import packetGUI.Main;
 import skeletor.ControlPanel;
 import skeletor.DinnerKit;
 import skeletor.Order;
@@ -15,6 +16,7 @@ import static java.lang.Thread.sleep;
  */
 public abstract class Client extends Human implements Runnable {
 
+    private boolean canExist = true;
     private int code;
     private int number_order;
     private long time_order;
@@ -26,12 +28,21 @@ public abstract class Client extends Human implements Runnable {
     public void run() {
         int number_of_try = 0;
         Random random = new Random(System.nanoTime());
-        while (true){
+        clientLoop: while (true){
+            //po dostarczeniu zamówienia klient kończy swoje działanie jeśli nie może istnieć
+            if (!canExist) {
+                break clientLoop;
+            }
             //czas na zastanowienie i złożenie zamówienia
             int wait_time = random.nextInt(5000)+1000;
             waitTime(wait_time);
 
-            LinkedList<DinnerKit> tmpmenu = ControlPanel.getMenu();
+            //klient jeszcze nie zamówił, a musi program zostaje zamknięty
+            if (!Main.isClientCanWork() || !canExist){
+                break clientLoop;
+            }
+
+            LinkedList<DinnerKit> tmpmenu = Main.getMenu();
 
             //tworzenie zamówienia
             int countChoose = random.nextInt(3)+1;
@@ -40,19 +51,31 @@ public abstract class Client extends Human implements Runnable {
                 int chooseKit = random.nextInt(tmpmenu.size());
                 dinnerKits[i] = tmpmenu.get(chooseKit);
             }
-            Order order = new Order(ControlPanel.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
-            ControlPanel.addOrderToList(order);//dodanie zamówienia do listy zamówień
-
+            Order order = new Order(Main.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
+            Main.addOrderToList(order);//dodanie zamówienia do listy zamówień
+            System.out.println("Zamówiłem");
             myOrder = order;
 
             //czekanie na dostarczenie zamówienia
             while (myOrder!=null){
+                //klient czeka na zrealizowanie zamówienia, program został zamknięty
+                if (!Main.isClientCanWork()){
+                    break clientLoop;
+                }
                 waitTime(1000);
             }
-
-            if (number_of_try == 10) break;
-            number_of_try++;
         }
+        System.out.println("Kończę działanie");
+    }
+
+
+
+    public boolean isCanExist() {
+        return canExist;
+    }
+
+    public void setCanExist(boolean canExist) {
+        this.canExist = canExist;
     }
 
     /**

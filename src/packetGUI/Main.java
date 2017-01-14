@@ -24,8 +24,13 @@ import skeletor.Transport.Vehicle;
 import java.util.LinkedList;
 import java.util.Random;
 
+import static java.lang.Thread.sleep;
+
 
 public class Main extends Application {
+    // strażnicy
+    private final static Object guardian_client = new Object();
+    private final static Object guardian_meal = new Object();
 
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
@@ -33,7 +38,7 @@ public class Main extends Application {
     private static volatile Map map;
     private static volatile LinkedList<DinnerKit> menu = new LinkedList<>();
     private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
-    private static volatile LinkedList<Thread> threads = new LinkedList<>();
+    private static volatile LinkedList<Thread> threadsClient = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
     private static volatile LinkedList<Client> clients_list = new LinkedList<>();
 
@@ -41,6 +46,54 @@ public class Main extends Application {
     private static int width = 20, lenght = 20, vehicleNumber = 20;
     private static int lRestaurant, wRestaurant;
     private static RandomGenerator randomGenerator = new RandomGenerator();
+
+
+    private static Controller controller;
+    private static volatile boolean clientCanWork = true;
+
+    public static boolean isClientCanWork() {
+        return clientCanWork;
+    }
+
+    public static int getSizeOfClientList() {
+        return clients_list.size();
+    }
+
+    public static void setClientToNotExist(){
+        synchronized (guardian_client) {
+            for (int i = 0; i<clients_list.size(); i++) {
+                if (clients_list.get(i).isCanExist()) {
+                    clients_list.get(i).setCanExist(false);
+                }
+            }
+        }
+    }
+
+    public static void delClientFromList(){
+        synchronized (guardian_client) {
+            for (int i =0 ; i<clients_list.size(); i++) {
+                if (!threadsClient.get(i).isAlive()) {
+                    threadsClient.remove(i);
+                    clients_list.remove(i);
+                    i--;
+                }
+            }
+            map.setClientOnMap(clients_list);
+        }
+    }
+
+    /**
+     * Metoda dodaje nowego klienta do listy klientów.
+     */
+    public static void addClientToList() {
+        synchronized (guardian_client) {
+            randomGenerator.addRandomClient(clients_list);//tworzenie klienta
+            threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
+            threadsClient.getLast().start();//włączenie go
+            System.out.println(clients_list.size());
+            map.setClientOnMap(clients_list);
+        }
+    }
 
     public static Map getMap() {
         return map;
@@ -89,11 +142,18 @@ public class Main extends Application {
         Main.vehicles = vehicles;
     }
 
+    /**
+     * Metoda czeka na zakończenie się wszystkich wątków klientów. Jeśli wątek się zakończył to usuwa go z listy wątków
+     * klientów.
+     */
     synchronized
-    public static void clearThreadListFromEndProcess() {
-        for (int i = 0; i < threads.size(); i++) {
-            if (!threads.get(i).isAlive()) {
-                threads.remove(i);
+    public static void clearClientThreadListFromEndProcess() {
+        while (threadsClient.size() != 0) {
+            for (int i = 0; i < threadsClient.size(); i++) {
+                if (!threadsClient.get(i).isAlive()) {
+                    threadsClient.remove(i);
+                    System.out.println("Usunąłem wątek");
+                }
             }
         }
     }
@@ -126,13 +186,6 @@ public class Main extends Application {
         Main.orderLinkedList = orderLinkedList;
     }
 
-    public static LinkedList<Thread> getThreads() {
-        return threads;
-    }
-
-    public static void setThreads(LinkedList<Thread> threads) {
-        Main.threads = threads;
-    }
 
     //**********************************************************************************************
     @Override
@@ -140,7 +193,7 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(this.getClass().getResource("sample.fxml"));
 
-        Controller controller = loader.getController();//załadowanie kontrolera do zmiennej
+        controller = loader.getController();//załadowanie kontrolera do zmiennej
 
         GridPane gridPane = loader.load(); //ładowanie GridPanel do zmiennej
 //        gridPane.getChildren().addAll( tablica, albo lista kontrolek);// dodanie wsyztskich kontrolek do gridPane
@@ -154,9 +207,9 @@ public class Main extends Application {
 //        System.out.println("dzieci grida głównego "+children.toString());
         AnchorPane anchorPane_child_scene = (AnchorPane) children.get(0);
         children = anchorPane_child_scene.getChildren();
-        System.out.println("dzieci anchora " + children.toString());
+//        System.out.println("dzieci anchora " + children.toString());
         GridPane gridPaneMap = (GridPane) children.get(12); //wyciągnięcie mapy z view
-        System.out.println(children.size());
+//        System.out.println(children.size());
         Label coordinateLabel = (Label) children.get(14);
 //        System.out.println("gridpanelMap "+gridPaneMap.toString());
         gridPaneMap.setAlignment(Pos.CENTER);
@@ -170,15 +223,16 @@ public class Main extends Application {
                 mapsButtons[i][k] = new Button("0");
                 mapsButtons[i][k].setPrefHeight(20);
                 mapsButtons[i][k].setPrefWidth(20);
-                //mapsButtons[i][k].setVisible(false);
+                mapsButtons[i][k].setVisible(false);
                 mapsButtons[i][k].setId(i + "," + k);
                 mapsButtons[i][k].setStyle("-fx-background-color: #fff;");//ustawienie koloru tła przycisku
                 mapsButtons[i][k].setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent event) {
                         //wyświetlenie współrzędnych przycisku, jego ID
+                        delClientFromList();
                         coordinateLabel.setText("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
-                        System.out.println(((Button) event.getSource()).getId().toString());
+                        System.out.println("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
                     }
                 });
                 gridPaneMap.add(mapsButtons[i][k], i, k);//dodanie do grid panelu przycisku
@@ -220,10 +274,33 @@ public class Main extends Application {
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
         LinkedList<Meal> meals_list = new LinkedList<>();
 
-        RandomGenerator randomGenerator = new RandomGenerator();
-
-        Map map = new Map(width, lenght, wRestaurant, lRestaurant);
+        map = new Map(width, lenght, wRestaurant, lRestaurant);
         map.setMapGUI(mapsButtons);
+
+//***********TWORZENIE WSTĘPNEJ LISTY POSIŁKÓW**********
+        for (int i = 0; i < 10; i++) {
+            randomGenerator.addRandomMeal(meals_list);
+            try {
+                sleep(1);
+            } catch (InterruptedException e) {
+                System.out.println(e);
+            }
+        }
+//***********TWORZENIE WSTĘPNEJ LISTY ZESTAWÓW OBIADOWYCH************
+        for (int i = 0; i < 10; i++) {
+            int count_of_meal = random.nextInt(4) + 1;
+            Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
+            for (int k = 0; k < count_of_meal; k++) {
+                try {
+                    sleep(1);
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
+                int number_of_meal = random.nextInt(meals_list.size());
+                meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
+            }
+            menu.addLast(new DinnerKit((byte) (i + 1), meals_in_DinnerKit));
+        }
 
         primaryStage.show();
     }
@@ -241,8 +318,11 @@ public class Main extends Application {
      */
     @Override
     public void stop() throws Exception {
-        super.stop();
+
+        clientCanWork = false;
+        clearClientThreadListFromEndProcess();
         System.out.println("Koniec");
+        super.stop();
     }
 
     public static void main(String[] args) {
