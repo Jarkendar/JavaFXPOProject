@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -32,12 +33,17 @@
             <Label id="label_Count_Meal" fx:id="label_Count_Meal" layoutX="200.0" layoutY="116.0" text="0" />
             <Label id="label_Count_Client" fx:id="label_Count_Client" layoutX="200.0" layoutY="36.0" text="0" />
             <Label id="label_Count_Deliverer" fx:id="label_Count_Deliverer" layoutX="200.0" layoutY="76.0" text="0" />
-            <GridPane fx:id="GridPaneMap" alignment="CENTER" gridLinesVisible="true" layoutX="286.0" layoutY="167.0" prefHeight="734.0" prefWidth="600.0"/>
+            <GridPane fx:id="GridPaneMap" alignment="CENTER" gridLinesVisible="true" layoutX="286.0" layoutY="167.0" prefHeight="734.0" prefWidth="600.0" />
             <AnchorPane layoutX="286.0" layoutY="14.0" prefHeight="124.0" prefWidth="600.0">
                <children>
                     <Button id="button_Order" fx:id="button_Order" layoutX="470.0" layoutY="79.0" mnemonicParsing="false" onMouseClicked="#openOrderView" text="Stwórz posiłek" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="79.0" />
                </children>
             </AnchorPane>
+            <Label fx:id="coordinate_Label" layoutX="286.0" layoutY="157.0" text="Nie kliknięto jeszcze w mapę.">
+               <padding>
+                  <Insets left="5.0" top="30.0" />
+               </padding>
+            </Label>
           </children></AnchorPane>
    </children>
 </GridPane>
