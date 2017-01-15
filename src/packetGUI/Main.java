@@ -179,11 +179,13 @@ public class Main extends Application {
      */
     public static void delClientFromList(){
         synchronized (guardian_client) {
-            for (int i =0 ; i<clients_list.size(); i++) {
-                if (!threadsClient.get(i).isAlive()) {
+            int size = clients_list.size();
+            for (int i =0 ; i<size; i++) {
+                if (threadsClient.size() != 0 && !threadsClient.get(i).isAlive()) {
                     threadsClient.remove(i);
                     clients_list.remove(i);
                     i--;
+                    size--;
                     subFromCountOrderToDeleteClient();
                 }
             }
@@ -341,7 +343,6 @@ public class Main extends Application {
                     @Override
                     public void handle(ActionEvent event) {
                         //wyświetlenie współrzędnych przycisku, jego ID
-                        delClientFromList();
                         coordinateLabel.setText("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
                         System.out.println("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
                     }
@@ -423,6 +424,7 @@ public class Main extends Application {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
+                            delClientFromList();
                             map.refreshMap(clients_list,deliverers_list);
                         }
                     });

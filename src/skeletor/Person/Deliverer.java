@@ -38,7 +38,7 @@ public class Deliverer extends Human implements Runnable {
             positionX = Main.getwRestaurant();
             positionY = Main.getlRestaurant();
 //pętla czekania, jeśli kierowca nie pracuje o aktualnej godzinie, aktualnego dnia to czeka
-            while (!canWork()) {
+            while (!canWork() || !Main.isDelivererCanWork()) {
                 if (!canExist) {
                     break Deliverer_Etique;
                 }
@@ -97,17 +97,43 @@ public class Deliverer extends Human implements Runnable {
                     //dojazd do klienta z zamówieniem
                     if (delivererOrder != null) {
                         if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
-                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
-                                positionX += (addressX - positionX);
-                                vehicle.burnGasoline();
-                                System.out.println(PESEL + " ruszyłem się w pionie");
+                            if (addressX > positionX) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (addressX >= positionX + i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + i, positionY, guardian)) {
+                                        positionX += i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
+                            } else if (addressX < positionX) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (addressX <= positionX - i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX - i, positionY, guardian)) {
+                                        positionX -= i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
                             }
+                            System.out.println(PESEL + " ruszyłem się w pionie");
                         } else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
-                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
-                                positionY += (addressY - positionY);
-                                vehicle.burnGasoline();
-                                System.out.println(PESEL + " ruszyłem się w poziomie");
+                            if (addressY > positionY) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (addressY >= positionY + i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + i, guardian)) {
+                                        positionY += i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
+                            } else if (addressY < positionY) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (addressY <= positionY - i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY - i, guardian)) {
+                                        positionY -= i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
                             }
+                            System.out.println(PESEL + " ruszyłem się w poziomie");
                         }//oddanie zamówienia klientowi
                         if ((addressX == positionX) && (addressY == positionY)) {
                             Main.getMap().addClientToMap(Main.getClients_list());
@@ -117,17 +143,43 @@ public class Deliverer extends Human implements Runnable {
                     }//powrót do restauracji z pustym bagażem
                     else if (delivererOrder == null) {
                         if (tmpX != positionX && tmpX >= positionX + (tmpX - positionX)) {
-                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
-                                positionX += (tmpX - positionX);
-                                vehicle.burnGasoline();
-                                System.out.println(PESEL + " wracam w pionie.");
+                            if (tmpX < positionX) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (tmpX <= positionX - i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX - i, positionY, guardian)) {
+                                        positionX -= i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
+                            } else if (tmpX > positionX) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (tmpX >= positionX + i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + i, positionY, guardian)) {
+                                        positionX += i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
                             }
+                            System.out.println(PESEL + " ruszyłem się w pionie");
                         } else if (tmpY != positionY && tmpY >= positionY + (tmpY - positionY)) {
-                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (tmpY - positionY), guardian)) {
-                                positionY += (tmpY - positionY);
-                                vehicle.burnGasoline();
-                                System.out.println(PESEL + " wracam w poziomie.");
+                            if (tmpY < positionY) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (tmpY <= positionY - i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY - i, guardian)) {
+                                        positionY -= i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
+                            } else if (tmpY > positionY) {
+                                for (int i = velocity; i > 0; i--) {
+                                    if (tmpY >= positionY + i && Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + i, guardian)) {
+                                        positionY += i;
+                                        vehicle.burnGasoline();
+                                        break;
+                                    }
+                                }
                             }
+                            System.out.println(PESEL + " ruszyłem się w poziomie");
                         }
                         if (tmpX == positionX && tmpY == positionY) {
                             System.out.println("Wróciłem do restauracji");
@@ -137,9 +189,7 @@ public class Deliverer extends Human implements Runnable {
                     System.out.println(PESEL + " aktualny stan paliwa " + vehicle.getActualTankValue());
                 }
                 System.out.println(PESEL + " " + positionX + "; " + positionY);
-                System.out.println("czekam");
-                waitTime(5000);//symulacja tur
-                System.out.println("skończyłem czekać");
+                waitTime(1000);//symulacja tur
             }
 //opuszczenie pojazdu przez dostawcę
             waitTime(1000);
@@ -148,6 +198,7 @@ public class Deliverer extends Human implements Runnable {
                 leaveVehicleOnParking(ControlPanel.getVehicles());
             }
         }
+        System.out.println("Kończę działanie dostawca");
     }
 
     public int getPositionX() {
