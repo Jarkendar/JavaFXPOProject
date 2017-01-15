@@ -56,7 +56,9 @@ public class Controller {
 
     public void delClient(MouseEvent mouseEvent) {
         synchronized (this) {
-            Main.setClientToNotExist();
+            if (Main.canOrderDeleteClient()) {
+                Main.setClientToNotExist();
+            }
             if(Integer.parseInt(label_Count_Client.getText()) != 0) {
                 label_Count_Client.setText(Integer.toString(Integer.parseInt(label_Count_Client.getText()) - 1));
             }

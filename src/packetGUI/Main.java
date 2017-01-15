@@ -47,9 +47,35 @@ public class Main extends Application {
     private static int lRestaurant, wRestaurant;
     private static RandomGenerator randomGenerator = new RandomGenerator();
 
+    //zmienna zliczająca ilość zleceń usunięć z listy klientów
+    private static volatile int countOrderToDeleteClient = 0;
 
     private static Controller controller;
     private static volatile boolean clientCanWork = true;
+
+    synchronized
+    public static boolean canOrderDeleteClient(){
+        if (countOrderToDeleteClient == clients_list.size()-1){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    synchronized
+    private static void addToCountOrderToDeleteClient(){
+        countOrderToDeleteClient++;
+    }
+
+    synchronized
+    private static void subFromCountOrderToDeleteClient(){
+        countOrderToDeleteClient--;
+    }
+
+    synchronized
+    public static int getCountOrderToDeleteClient() {
+        return countOrderToDeleteClient;
+    }
 
     public static boolean isClientCanWork() {
         return clientCanWork;
@@ -61,6 +87,7 @@ public class Main extends Application {
 
     public static void setClientToNotExist(){
         synchronized (guardian_client) {
+            addToCountOrderToDeleteClient();
             for (int i = 0; i<clients_list.size(); i++) {
                 if (clients_list.get(i).isCanExist()) {
                     clients_list.get(i).setCanExist(false);
@@ -76,6 +103,7 @@ public class Main extends Application {
                     threadsClient.remove(i);
                     clients_list.remove(i);
                     i--;
+                    subFromCountOrderToDeleteClient();
                 }
             }
             map.setClientOnMap(clients_list);
