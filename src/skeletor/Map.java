@@ -5,6 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import packetGUI.Main;
 import skeletor.Person.Client;
+import skeletor.Person.Deliverer;
 
 import java.util.LinkedList;
 
@@ -43,7 +44,39 @@ public class Map {
     }
 
     synchronized
-    public void setClientOnMap(LinkedList<Client> clientLinkedList){
+    public void refreshMap(LinkedList<Client> clients, LinkedList<Deliverer> deliverers){
+        clearMap();
+        setRestaurantOnMap();
+        setClientOnMap(clients);
+        setDelivererOnMap(deliverers);
+    }
+
+    synchronized
+    public void setDelivererOnMap(LinkedList<Deliverer> delivererLinkedList){
+        for (Deliverer x: delivererLinkedList){
+            int posX = x.getPositionX(), posY = x.getPositionY();
+            if (!mapGUI[posX][posY].isVisible()){
+                mapGUI[posX][posY].setText("D");
+                mapGUI[posX][posY].setVisible(true);
+                mapGUI[posX][posY].setTextFill(Color.WHITE);
+                mapGUI[posX][posY].setStyle("-fx-background-color: #0000CC;");
+            }
+        }
+    }
+
+    synchronized
+    private void clearMap(){
+        for (int i = 0; i<Main.getWidth(); i++){
+            for (int k = 0; k<Main.getLenght(); k++){
+                mapGUI[i][k].setText("0");
+                mapGUI[i][k].setVisible(false);
+                mapGUI[i][k].setStyle("-fx-background-color: #fff;");
+            }
+        }
+    }
+
+    synchronized
+    private void setClientOnMap(LinkedList<Client> clientLinkedList){
         for (int i = 0; i<Main.getWidth(); i++){
             for (int k = 0; k<Main.getLenght(); k++){
                 mapGUI[i][k].setText("0");

@@ -42,6 +42,7 @@ public class Main extends Application {
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
     private static volatile LinkedList<Client> clients_list = new LinkedList<>();
     private static volatile LinkedList<Meal> meals_list = new LinkedList<>();
+    private static volatile LinkedList<Deliverer> deliverers_list = new LinkedList<>();
 
     //zmienne regulujące
     private static int width = 20, lenght = 20, vehicleNumber = 20;
@@ -54,7 +55,16 @@ public class Main extends Application {
     private static Controller controller;
     //zmienna zabijająca wszystkich klientów
     private static volatile boolean clientCanWork = true;
+    private static volatile boolean delivererCanWork = true;
 
+    public static LinkedList<Deliverer> getDeliverers_list() {
+        return deliverers_list;
+    }
+
+
+    public static boolean isDelivererCanWork() {
+        return delivererCanWork;
+    }
 
     /**
      * Metoda dodawania posiłku, dodatkowo tworzy zestaw obiadowy w którym może znaleźć się stworzony posiłek.
@@ -141,7 +151,7 @@ public class Main extends Application {
                     subFromCountOrderToDeleteClient();
                 }
             }
-            map.setClientOnMap(clients_list);
+            map.refreshMap(clients_list,deliverers_list);
         }
     }
 
@@ -154,7 +164,7 @@ public class Main extends Application {
             threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
             threadsClient.getLast().start();//włączenie go
             System.out.println(clients_list.size());
-            map.setClientOnMap(clients_list);
+            map.refreshMap(clients_list,deliverers_list);
         }
     }
 
@@ -342,7 +352,7 @@ public class Main extends Application {
 
         Random random = new Random(System.nanoTime());
 
-        LinkedList<Deliverer> deliverers_list = new LinkedList<>();
+
 
 
         map = new Map(width, lenght, wRestaurant, lRestaurant);
@@ -400,6 +410,7 @@ public class Main extends Application {
     public void stop() throws Exception {
 
         clientCanWork = false;
+        delivererCanWork = false;
         clearClientThreadListFromEndProcess();
         System.out.println("Koniec");
         super.stop();

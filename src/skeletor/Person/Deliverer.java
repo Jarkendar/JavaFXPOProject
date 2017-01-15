@@ -1,5 +1,6 @@
 package skeletor.Person;
 
+import packetGUI.Main;
 import skeletor.ControlPanel;
 import skeletor.Enums.*;
 import skeletor.Order;
@@ -27,19 +28,26 @@ public class Deliverer extends Human implements Runnable {
     private Order delivererOrder;
     private int positionX;
     private int positionY;
+    private boolean canExist = true;
 
     @Override
     public void run() {
 //zabranie zamówienia
-        Deliverer_Etique: do {
+        Deliverer_Etique: while (Main.isDelivererCanWork()){
 
 //pętla czekania, jeśli kierowca nie pracuje o aktualnej godzinie, aktualnego dnia to czeka
             while (!canWork()){
+                if (!canExist){
+                    break Deliverer_Etique;
+                }
                 System.out.println(PESEL + " Mam wolne.");
                 waitTime(60000);
             }
 //zabieranie zamówienia
             do {
+                if (!canExist){
+                    break Deliverer_Etique;
+                }
                 //dostawca idzie sprawdzić czy są jakieś zamówienia, którymi może się zająć
                 waitTime(1000);
                 synchronized (guardian) {
@@ -143,7 +151,19 @@ public class Deliverer extends Human implements Runnable {
             synchronized (guardian) {
                 leaveVehicleOnParking(ControlPanel.getVehicles());
             }
-        }while (true);
+        }
+    }
+
+    public int getPositionX() {
+        return positionX;
+    }
+
+    public int getPositionY() {
+        return positionY;
+    }
+
+    public void setCanExist(boolean canExist) {
+        this.canExist = canExist;
     }
 
     /**
@@ -157,54 +177,55 @@ public class Deliverer extends Human implements Runnable {
         int day = calendar.get(Calendar.DAY_OF_WEEK);
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         boolean canHour = false, canDay = false;
-        Etiq_day:for (int i = 0; i<work_day.length; i++){
-            switch (work_day[i]){
-                case niedziela:{
+        Etiq_day:
+        for (E_Dni aWork_day : work_day) {
+            switch (aWork_day) {
+                case niedziela: {
                     if (day == 1) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case poniedziałek:{
-                    if (day == 2){
+                case poniedziałek: {
+                    if (day == 2) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case wtorek:{
-                    if (day == 3){
+                case wtorek: {
+                    if (day == 3) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case środa:{
-                    if (day == 4){
+                case środa: {
+                    if (day == 4) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case czwartek:{
-                    if (day == 5){
+                case czwartek: {
+                    if (day == 5) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case piątek:{
-                    if (day == 6){
+                case piątek: {
+                    if (day == 6) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
-                case sobota:{
-                    if (day == 7){
+                case sobota: {
+                    if (day == 7) {
                         canDay = true;
                         break Etiq_day;
                     }
                 }
             }
         }
-        for (int i = 0; i<work_hour.length; i++){
-            if (hour == work_hour[i]){
+        for (int aWork_hour : work_hour) {
+            if (hour == aWork_hour) {
                 canHour = true;
                 break;
             }
