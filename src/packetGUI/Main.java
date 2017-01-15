@@ -31,6 +31,7 @@ public class Main extends Application {
     // strażnicy
     private final static Object guardian_client = new Object();
     private final static Object guardian_meal = new Object();
+    private final static Object guardian_DinnerKit = new Object();
 
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
@@ -41,6 +42,7 @@ public class Main extends Application {
     private static volatile LinkedList<Thread> threadsClient = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
     private static volatile LinkedList<Client> clients_list = new LinkedList<>();
+    private static volatile LinkedList<Meal> meals_list = new LinkedList<>();
 
     //zmienne regulujące
     private static int width = 20, lenght = 20, vehicleNumber = 20;
@@ -51,7 +53,19 @@ public class Main extends Application {
     private static volatile int countOrderToDeleteClient = 0;
 
     private static Controller controller;
+    //zmienna zabijająca wszystkich klientów
     private static volatile boolean clientCanWork = true;
+
+
+    /**
+     * Metoda dodawania posiłku, dodatkowo tworzy zestaw obiadowy w którym może znaleźć się stworzony posiłek.
+     */
+    public static void addMealToMealList(){
+        synchronized (guardian_meal) {
+            randomGenerator.addRandomMeal(meals_list);
+            createDinnerKit();
+        }
+    }
 
     synchronized
     public static boolean canOrderDeleteClient(){
@@ -121,6 +135,14 @@ public class Main extends Application {
             System.out.println(clients_list.size());
             map.setClientOnMap(clients_list);
         }
+    }
+
+    /**
+     * Getter listy posiłków.
+     * @return lista posiłków
+     */
+    public static LinkedList<Meal> getMeals_list() {
+        return meals_list;
     }
 
     public static Map getMap() {
@@ -236,9 +258,9 @@ public class Main extends Application {
         AnchorPane anchorPane_child_scene = (AnchorPane) children.get(0);
         children = anchorPane_child_scene.getChildren();
 //        System.out.println("dzieci anchora " + children.toString());
-        GridPane gridPaneMap = (GridPane) children.get(12); //wyciągnięcie mapy z view
+        GridPane gridPaneMap = (GridPane) children.get(11); //wyciągnięcie mapy z view
 //        System.out.println(children.size());
-        Label coordinateLabel = (Label) children.get(14);
+        Label coordinateLabel = (Label) children.get(13);
 //        System.out.println("gridpanelMap "+gridPaneMap.toString());
         gridPaneMap.setAlignment(Pos.CENTER);
         //25 rzędów | 30 kolumn
@@ -300,7 +322,7 @@ public class Main extends Application {
         Random random = new Random(System.nanoTime());
 
         LinkedList<Deliverer> deliverers_list = new LinkedList<>();
-        LinkedList<Meal> meals_list = new LinkedList<>();
+
 
         map = new Map(width, lenght, wRestaurant, lRestaurant);
         map.setMapGUI(mapsButtons);
@@ -316,6 +338,23 @@ public class Main extends Application {
         }
 //***********TWORZENIE WSTĘPNEJ LISTY ZESTAWÓW OBIADOWYCH************
         for (int i = 0; i < 10; i++) {
+            createDinnerKit();
+        }
+
+        primaryStage.show();
+    }
+
+//    public static GridPane getGridPaneMap (FXMLLoader loader) throws IOException{
+//
+//        return gridPane;
+//    }
+
+    /**
+     * Metoda tworzy zestaw obiadowy.
+     */
+    private static void createDinnerKit() {
+        synchronized (guardian_DinnerKit) {
+            Random random = new Random(System.nanoTime());
             int count_of_meal = random.nextInt(4) + 1;
             Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
             for (int k = 0; k < count_of_meal; k++) {
@@ -327,17 +366,9 @@ public class Main extends Application {
                 int number_of_meal = random.nextInt(meals_list.size());
                 meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
             }
-            menu.addLast(new DinnerKit((byte) (i + 1), meals_in_DinnerKit));
+            menu.addLast(new DinnerKit((byte) (menu.size() + 1), meals_in_DinnerKit));
         }
-
-        primaryStage.show();
     }
-
-//    public static GridPane getGridPaneMap (FXMLLoader loader) throws IOException{
-//
-//        return gridPane;
-//    }
-
 
     /**
      * Metoda wywoływana automatycznie na koniec działania programu. Na kliknięcie przycisku X.

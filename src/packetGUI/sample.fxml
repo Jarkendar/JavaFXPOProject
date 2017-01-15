@@ -28,9 +28,8 @@
               <Label id="label_Client" fx:id="label_Client" layoutX="127.0" layoutY="36.0" text="Klienci" />
               <Label id="label_Deliverer" fx:id="label_Deliverer" layoutX="127.0" layoutY="76.0" text="Dostawcy" />
               <Button id="button_Add_Meal" fx:id="button_Add_Meal" layoutX="40.0" layoutY="111.0" mnemonicParsing="false" onMouseClicked="#addMeal" text="+" />
-              <Button id="button_Del_Meal" fx:id="button_Del_Meal" layoutX="80.0" layoutY="111.0" mnemonicParsing="false" onMouseClicked="#delMeal" prefHeight="31.0" prefWidth="31.0" text="-" />
               <Label id="label_Meal" fx:id="label_Meal" layoutX="127.0" layoutY="116.0" text="Posiłki" />
-            <Label id="label_Count_Meal" fx:id="label_Count_Meal" layoutX="200.0" layoutY="116.0" text="0" />
+            <Label id="label_Count_Meal" fx:id="label_Count_Meal" layoutX="200.0" layoutY="116.0" text="10" />
             <Label id="label_Count_Client" fx:id="label_Count_Client" layoutX="200.0" layoutY="36.0" text="0" />
             <Label id="label_Count_Deliverer" fx:id="label_Count_Deliverer" layoutX="200.0" layoutY="76.0" text="0" />
             <GridPane fx:id="GridPaneMap" alignment="CENTER" gridLinesVisible="true" layoutX="286.0" layoutY="167.0" prefHeight="734.0" prefWidth="600.0" />
