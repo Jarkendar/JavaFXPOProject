@@ -55,8 +55,8 @@ public class Map {
     public void setDelivererOnMap(LinkedList<Deliverer> delivererLinkedList){
         for (Deliverer x: delivererLinkedList){
             int posX = x.getPositionX(), posY = x.getPositionY();
-            if (!mapGUI[posX][posY].isVisible()){
-                mapGUI[posX][posY].setText("D");
+            if (!mapGUI[posX][posY].getText().equals("K") && !mapGUI[posX][posY].getText().equals("R")){
+                mapGUI[posX][posY].setText("S");
                 mapGUI[posX][posY].setVisible(true);
                 mapGUI[posX][posY].setTextFill(Color.WHITE);
                 mapGUI[posX][posY].setStyle("-fx-background-color: #0000CC;");
@@ -199,5 +199,6 @@ public class Map {
             }
             System.out.println();
         }
+        System.out.println();
     }
 }

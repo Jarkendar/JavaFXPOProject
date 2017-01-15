@@ -1,6 +1,7 @@
 package packetGUI;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,6 +32,7 @@ public class Main extends Application {
     private final static Object guardian_meal = new Object();
     private final static Object guardian_DinnerKit = new Object();
     private final static Object guardian_deliverer = new Object();
+    private final static Object guardian_Map = new Object();
 
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
@@ -38,11 +40,13 @@ public class Main extends Application {
     private static volatile Map map;
     private static volatile LinkedList<DinnerKit> menu = new LinkedList<>();
     private static volatile LinkedList<Order> orderLinkedList = new LinkedList<>();
-    private static volatile LinkedList<Thread> threadsClient = new LinkedList<>();
     private static volatile LinkedList<Vehicle> vehicles = new LinkedList<>();
     private static volatile LinkedList<Client> clients_list = new LinkedList<>();
     private static volatile LinkedList<Meal> meals_list = new LinkedList<>();
     private static volatile LinkedList<Deliverer> deliverers_list = new LinkedList<>();
+
+    private static volatile LinkedList<Thread> threadsClient = new LinkedList<>();
+    private static volatile LinkedList<Thread> threadsDeliverer = new LinkedList<>();
 
     //zmienne regulujące
     private static int width = 20, lenght = 20, vehicleNumber = 20;
@@ -56,6 +60,7 @@ public class Main extends Application {
     //zmienna zabijająca wszystkich klientów
     private static volatile boolean clientCanWork = true;
     private static volatile boolean delivererCanWork = true;
+    private static volatile boolean timeStop = true;
 
     public static LinkedList<Deliverer> getDeliverers_list() {
         return deliverers_list;
@@ -124,6 +129,14 @@ public class Main extends Application {
     }
 
     /**
+     * Metoda sprawdza rozmiar listy dostawców.
+     * @return rozmiar listy dostawców.
+     */
+    public static int getSizeOfDelivererList(){
+        return deliverers_list.size();
+    }
+
+    /**
      * Metoda ustwia jednemu klientowi, status braku pozwolenia na egzystencje.
      */
     public static void setClientToNotExist(){
@@ -135,6 +148,29 @@ public class Main extends Application {
                     break;
                 }
             }
+        }
+    }
+
+    /**
+     * Metoda odświeżania mapy.
+     */
+    public static void pleaseMapToRefresh(){
+        synchronized (guardian_Map){
+            map.refreshMap(clients_list, deliverers_list);
+        }
+    }
+
+
+
+    /**
+     * Metoda dodaje dostawców do listy i włącza im wątek.
+     */
+    public static void addDelivererToList(){
+        synchronized (guardian_deliverer){
+            randomGenerator.addRandomDeliverer(deliverers_list, guardian_deliverer);//tworzenie dostawcy
+            threadsDeliverer.addLast(new Thread(deliverers_list.getLast()));//dodanie go do listy wątków dostawców
+            threadsDeliverer.getLast().start();//włączenie go
+            System.out.println(deliverers_list.size());
         }
     }
 
@@ -151,7 +187,6 @@ public class Main extends Application {
                     subFromCountOrderToDeleteClient();
                 }
             }
-            map.refreshMap(clients_list,deliverers_list);
         }
     }
 
@@ -164,7 +199,6 @@ public class Main extends Application {
             threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
             threadsClient.getLast().start();//włączenie go
             System.out.println(clients_list.size());
-            map.refreshMap(clients_list,deliverers_list);
         }
     }
 
@@ -200,10 +234,6 @@ public class Main extends Application {
 
     public static int getwRestaurant() {
         return wRestaurant;
-    }
-
-    public static int getVehicleNumber() {
-        return vehicleNumber;
     }
 
     public static int getWidth() {
@@ -358,6 +388,11 @@ public class Main extends Application {
         map = new Map(width, lenght, wRestaurant, lRestaurant);
         map.setMapGUI(mapsButtons);
 
+//***********TWORZENIE POJAZDÓW RESTAURACJI I NAPEŁNIANIE ZBIORNIKA PALIWA***********
+        randomGenerator.createVehicleForRestaurant(vehicles, vehicleNumber);
+        for (Vehicle x: vehicles){
+            x.fillTankVehicle();
+        }
 //***********TWORZENIE WSTĘPNEJ LISTY POSIŁKÓW**********
         for (int i = 0; i < 10; i++) {
             randomGenerator.addRandomMeal(meals_list);
@@ -371,6 +406,29 @@ public class Main extends Application {
         for (int i = 0; i < 10; i++) {
             createDinnerKit();
         }
+
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                System.out.println("Włączone odświerzanie");
+                while (timeStop){
+                    try {
+                        sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            map.refreshMap(clients_list,deliverers_list);
+                        }
+                    });
+                }
+            }
+        }.start();
 
         primaryStage.show();
     }
@@ -409,6 +467,7 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
 
+        timeStop = false;
         clientCanWork = false;
         delivererCanWork = false;
         clearClientThreadListFromEndProcess();

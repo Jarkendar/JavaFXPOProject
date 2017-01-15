@@ -33,11 +33,13 @@ public class Deliverer extends Human implements Runnable {
     @Override
     public void run() {
 //zabranie zamówienia
-        Deliverer_Etique: while (Main.isDelivererCanWork()){
-
+        Deliverer_Etique:
+        while (Main.isDelivererCanWork()) {
+            positionX = Main.getwRestaurant();
+            positionY = Main.getlRestaurant();
 //pętla czekania, jeśli kierowca nie pracuje o aktualnej godzinie, aktualnego dnia to czeka
-            while (!canWork()){
-                if (!canExist){
+            while (!canWork()) {
+                if (!canExist) {
                     break Deliverer_Etique;
                 }
                 System.out.println(PESEL + " Mam wolne.");
@@ -45,27 +47,22 @@ public class Deliverer extends Human implements Runnable {
             }
 //zabieranie zamówienia
             do {
-                if (!canExist){
+                if (!canExist) {
                     break Deliverer_Etique;
                 }
                 //dostawca idzie sprawdzić czy są jakieś zamówienia, którymi może się zająć
                 waitTime(1000);
                 synchronized (guardian) {
-                    getDelivererOrder(ControlPanel.getOrderLinkedList());
+                    getDelivererOrder(Main.getOrderLinkedList());
                 }
             } while (delivererOrder == null);
-            synchronized (guardian) {
-                System.out.println(PESEL + " zabrałem zamówienie na ");
-                delivererOrder.displayOrder();
-                System.out.println();
-            }
 
 //zabranie pojazdu z parkingu Restauracji
             do {
                 //dostawca idzie sprawdzić czy na parkingu stoją jakieś pojazdy którymi może prowadzić
                 waitTime(1000);
                 synchronized (guardian) {
-                    getVehicleFromParking(ControlPanel.getVehicles());
+                    getVehicleFromParking(Main.getVehicles());
                 }
 
             } while (vehicle == null);
@@ -86,48 +83,47 @@ public class Deliverer extends Human implements Runnable {
             String[] coordinats = address.split(":");
 
             System.out.println("Mam jechać na " + address);
-            System.out.println("Restauracja jest na " +ControlPanel.getwRestaurant()+ " " + ControlPanel.getlRestaurant());
-            System.out.println("Jestem na "+ positionX + " " +positionY);
+            System.out.println("Restauracja jest na " + Main.getwRestaurant() + " " + Main.getlRestaurant());
+            System.out.println("Jestem na " + positionX + " " + positionY);
 
             int addressX = Integer.parseInt(coordinats[0]);
             int addressY = Integer.parseInt(coordinats[1]);
-            int velocity = (int)(vehicle.getSpeed())/10;
-            System.out.println("velocity = " +velocity);
-            int tmpX = ControlPanel.getwRestaurant(), tmpY = ControlPanel.getlRestaurant();
+            int velocity = (int) (vehicle.getSpeed()) / 10;
+            System.out.println("velocity = " + velocity);
+            int tmpX = Main.getwRestaurant(), tmpY = Main.getlRestaurant();
 //dostarczenie zamówienia do klienta i powrót
-            while (true){
+            while (true) {
                 synchronized (guardian) {
                     //dojazd do klienta z zamówieniem
                     if (delivererOrder != null) {
                         if (addressX != positionX && addressX >= positionX + (addressX - positionX)) {
-                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
+                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (addressX - positionX), positionY, guardian)) {
                                 positionX += (addressX - positionX);
                                 vehicle.burnGasoline();
                                 System.out.println(PESEL + " ruszyłem się w pionie");
                             }
-                        }
-                        else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
-                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
+                        } else if (addressY != positionY && addressY >= positionY + (addressY - positionY)) {
+                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (addressY - positionY), guardian)) {
                                 positionY += (addressY - positionY);
                                 vehicle.burnGasoline();
                                 System.out.println(PESEL + " ruszyłem się w poziomie");
                             }
                         }//oddanie zamówienia klientowi
                         if ((addressX == positionX) && (addressY == positionY)) {
-                            ControlPanel.getMap().addClientToMap(ControlPanel.getClients_list());
+                            Main.getMap().addClientToMap(Main.getClients_list());
                             giveOrderToClient();
                             System.out.println(PESEL + " pora wrócić.");
                         }
                     }//powrót do restauracji z pustym bagażem
                     else if (delivererOrder == null) {
                         if (tmpX != positionX && tmpX >= positionX + (tmpX - positionX)) {
-                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
+                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX + (tmpX - positionX), positionY, guardian)) {
                                 positionX += (tmpX - positionX);
                                 vehicle.burnGasoline();
                                 System.out.println(PESEL + " wracam w pionie.");
                             }
                         } else if (tmpY != positionY && tmpY >= positionY + (tmpY - positionY)) {
-                            if (ControlPanel.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (tmpY - positionY), guardian)) {
+                            if (Main.getMap().setDelivererPositionOnMap(positionX, positionY, positionX, positionY + (tmpY - positionY), guardian)) {
                                 positionY += (tmpY - positionY);
                                 vehicle.burnGasoline();
                                 System.out.println(PESEL + " wracam w poziomie.");
@@ -138,7 +134,7 @@ public class Deliverer extends Human implements Runnable {
                             break;
                         }
                     }
-                    System.out.println(PESEL + " aktualny stan paliwa " +vehicle.getActualTankValue());
+                    System.out.println(PESEL + " aktualny stan paliwa " + vehicle.getActualTankValue());
                 }
                 System.out.println(PESEL + " " + positionX + "; " + positionY);
                 System.out.println("czekam");
@@ -168,9 +164,10 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Metoda sprawdza czy kierowca może wziąść zamówienie, a potem je rozwieść. Sprawdza czy kierowca pracuje.
+     *
      * @return wartość true - jeśli kierowca pracuje w dany dzień o danej godzinie, false - w przeciwnym wypadku
      */
-    private boolean canWork(){
+    private boolean canWork() {
         Date date = new Date(System.currentTimeMillis());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -236,9 +233,9 @@ public class Deliverer extends Human implements Runnable {
     /**
      * Metoda szuka klienta, daje mu zamówienie i usuwa zamówienie z bagażu dostawcy.
      */
-    private void giveOrderToClient(){
+    private void giveOrderToClient() {
         synchronized (guardian) {
-            for (Client x : ControlPanel.getClients_list()) {
+            for (Client x : Main.getClients_list()) {
                 if (x.getMyOrder() == delivererOrder) {
                     x.getMyOrderFromDeliverer();
                     delivererOrder = null;
@@ -251,19 +248,20 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Metoda zabiera jedno zamówienie z listy zamówień, sprawdza czy dostawca może je zabrać.
+     *
      * @param orders lista zamówień
      */
-    private void getDelivererOrder (LinkedList<Order> orders){
+    private void getDelivererOrder(LinkedList<Order> orders) {
         synchronized (guardian) {
             for (int i = 0; i < orders.size(); i++) {
                 if (orders.get(i).getReadyTime() < System.currentTimeMillis()) {
                     //zabezpieczenie przed wzięciem zamówienia za ciężkiego dla pojazdu na który ma uprawnienia
-                    if (this.getCan_drive().equals(E_Uprawnienia.skuter) && orders.get(i).calculateOrderWeight()<= 50.0){
+                    if (this.getCan_drive().equals(E_Uprawnienia.skuter) && orders.get(i).calculateOrderWeight() <= 50.0) {
                         this.delivererOrder = orders.get(i);
                         orders.remove(i);
                         System.out.println("Zabrałem zamówienie");
                         break;
-                    }else if (this.can_drive.equals(E_Uprawnienia.samochód) && orders.get(i).calculateOrderWeight() <= 100.0){
+                    } else if (this.can_drive.equals(E_Uprawnienia.samochód) && orders.get(i).calculateOrderWeight() <= 100.0) {
                         this.delivererOrder = orders.get(i);
                         orders.remove(i);
                         System.out.println("Zabrałem zamówienie");
@@ -276,9 +274,10 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Metoda czekania określoną liczbę milisekund.
+     *
      * @param time czas czekania w milisekundach
      */
-    private void waitTime(int time){
+    private void waitTime(int time) {
         try {
             sleep(time);
         } catch (InterruptedException e) {
@@ -288,9 +287,10 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Metoda zostawiania/zwalniania pojazdu na parkingu restauracji i go tankuje.
+     *
      * @param vehicles lista pojazdów na parkingu
      */
-    public void leaveVehicleOnParking(LinkedList<Vehicle> vehicles){
+    public void leaveVehicleOnParking(LinkedList<Vehicle> vehicles) {
         synchronized (guardian) {
             vehicles.addLast(this.vehicle);
             vehicles.getLast().fillTankVehicle();
@@ -300,10 +300,11 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Metoda pobierania pojazdu z parkingu restauracji.
+     *
      * @param vehicles lista pojazdów na parkingu
      * @return wartość boolean określająca czy udało się pobrać samochód
      */
-    public boolean getVehicleFromParking (LinkedList<Vehicle> vehicles){
+    public boolean getVehicleFromParking(LinkedList<Vehicle> vehicles) {
         synchronized (guardian) {
             for (int i = 0; i < vehicles.size(); i++) {
                 if (vehicles.get(i) instanceof Car && this.getCan_drive().equals(E_Uprawnienia.samochód)) {
@@ -333,16 +334,17 @@ public class Deliverer extends Human implements Runnable {
 
     /**
      * Konstructor klasy Deliver Person.Human
+     *
      * @param name
      * @param subname
-     * @param PESEL - indywidualny numer PESEL
+     * @param PESEL     - indywidualny numer PESEL
      * @param work_hour - godziny pracy
-     * @param work_day - dni pracy
+     * @param work_day  - dni pracy
      * @param can_drive - uprawnienia prowadzenia pojazdu
      */
     public Deliverer(String name, String subname,
                      long PESEL, int[] work_hour,
-                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian, int positionX, int positionY){
+                     E_Dni[] work_day, E_Uprawnienia can_drive, Object guardian, int positionX, int positionY) {
         super(name, subname);
         this.PESEL = PESEL;
         this.work_day = work_day;
@@ -352,7 +354,6 @@ public class Deliverer extends Human implements Runnable {
         this.positionX = positionX;
         this.positionY = positionY;
     }
-
 
 
     public long getPESEL() {

@@ -27,6 +27,10 @@ public class Controller {
 
     }
 
+    /**
+     * Dodanie klienta.
+     * @param mouseEvent
+     */
     public void addClient(MouseEvent mouseEvent) {
         mouseEvent.getSource();//wyciąganie elementu na którym została wykonana akcji
         if (Main.getSizeOfClientList() < 40) {
@@ -38,6 +42,10 @@ public class Controller {
         }
     }
 
+    /**
+     * Usunięcie klienta.
+     * @param mouseEvent
+     */
     public void delClient(MouseEvent mouseEvent) {
         synchronized (this) {
             if (Main.canOrderDeleteClient()) {
@@ -54,16 +62,34 @@ public class Controller {
         }
     }
 
+    /**
+     * Dodanie dostawcy.
+     * @param mouseEvent
+     */
     public void addDeliverer(MouseEvent mouseEvent) {
-        label_Count_Deliverer.setText(Integer.toString(Integer.parseInt(label_Count_Deliverer.getText())+1));
+        if (Main.getSizeOfDelivererList() < 40) {
+            Main.addDelivererToList();
+            label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
+            button_Del_Deliverer.setDisable(false);
+        }else {
+            label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()) + " osiągnięto limit dostawców." );
+        }
     }
 
+    /**
+     * Usunięcie dostawcy.
+     * @param mouseEvent
+     */
     public void delDeliverer(MouseEvent mouseEvent) {
         if (Integer.parseInt(label_Count_Deliverer.getText()) != 0){
             label_Count_Deliverer.setText(Integer.toString(Integer.parseInt(label_Count_Deliverer.getText())-1));
         }
     }
 
+    /**
+     * Dodanie posiłku.
+     * @param mouseEvent
+     */
     public void addMeal(MouseEvent mouseEvent) {
         Main.addMealToMealList();
         label_Count_Meal.setText(Integer.toString(Main.getMeals_list().size()));
