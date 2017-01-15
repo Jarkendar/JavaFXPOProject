@@ -32,6 +32,7 @@ public class Controller {
         if (Main.getSizeOfClientList() < 40) {
             Main.addClientToList();
             label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
+            button_Del_Client.setDisable(false);
         }else {
             label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()) + " osiągnięto limit klientów." );
         }
@@ -41,6 +42,8 @@ public class Controller {
         synchronized (this) {
             if (Main.canOrderDeleteClient()) {
                 Main.setClientToNotExist();
+            }else {
+                button_Del_Client.setDisable(true);
             }
             if(Integer.parseInt(label_Count_Client.getText()) != 0) {
                 label_Count_Client.setText(Integer.toString(Integer.parseInt(label_Count_Client.getText()) - 1));

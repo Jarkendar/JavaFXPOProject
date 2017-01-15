@@ -1,8 +1,6 @@
 package packetGUI;
 
 import javafx.application.Application;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,6 +30,7 @@ public class Main extends Application {
     private final static Object guardian_client = new Object();
     private final static Object guardian_meal = new Object();
     private final static Object guardian_DinnerKit = new Object();
+    private final static Object guardian_deliverer = new Object();
 
     //sekcje krytyczne
     private static volatile int orderNumber = 1;
@@ -67,6 +66,10 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia
+     * @return true - jeśli można, false -jeśli nie można
+     */
     synchronized
     public static boolean canOrderDeleteClient(){
         if (countOrderToDeleteClient == clients_list.size()-1){
@@ -76,11 +79,17 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Metoda dodaje 1 do licznika zleceń usunięcia.
+     */
     synchronized
     private static void addToCountOrderToDeleteClient(){
         countOrderToDeleteClient++;
     }
 
+    /**
+     * Metoda odejmuje 1 od licznika zleceń usunięcia.
+     */
     synchronized
     private static void subFromCountOrderToDeleteClient(){
         countOrderToDeleteClient--;
@@ -91,25 +100,37 @@ public class Main extends Application {
         return countOrderToDeleteClient;
     }
 
+
     public static boolean isClientCanWork() {
         return clientCanWork;
     }
 
+    /**
+     * Metoda sprawdza rozmiar listy klientów.
+     * @return rozmiar listy klientów.
+     */
     public static int getSizeOfClientList() {
         return clients_list.size();
     }
 
+    /**
+     * Metoda ustwia jednemu klientowi, status braku pozwolenia na egzystencje.
+     */
     public static void setClientToNotExist(){
         synchronized (guardian_client) {
             addToCountOrderToDeleteClient();
             for (int i = 0; i<clients_list.size(); i++) {
                 if (clients_list.get(i).isCanExist()) {
                     clients_list.get(i).setCanExist(false);
+                    break;
                 }
             }
         }
     }
 
+    /**
+     * Metoda usuwa klienta z listy, zsynchronizoawana obiektem guardian_client.
+     */
     public static void delClientFromList(){
         synchronized (guardian_client) {
             for (int i =0 ; i<clients_list.size(); i++) {
@@ -125,7 +146,7 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda dodaje nowego klienta do listy klientów.
+     * Metoda dodaje nowego klienta do listy klientów, zsynchronizowana obiektem guardian_client.
      */
     public static void addClientToList() {
         synchronized (guardian_client) {

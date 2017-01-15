@@ -26,40 +26,40 @@ public abstract class Client extends Human implements Runnable {
 
     @Override
     public void run() {
-        int number_of_try = 0;
         Random random = new Random(System.nanoTime());
-        clientLoop: while (true){
+        clientLoop:
+        while (true) {
             //po dostarczeniu zamówienia klient kończy swoje działanie jeśli nie może istnieć
             if (!canExist) {
                 break clientLoop;
             }
             //czas na zastanowienie i złożenie zamówienia
-            int wait_time = random.nextInt(5000)+1000;
+            int wait_time = random.nextInt(5000) + 1000;
             waitTime(wait_time);
 
             //klient jeszcze nie zamówił, a musi program zostaje zamknięty
-            if (!Main.isClientCanWork() || !canExist){
+            if (!Main.isClientCanWork() || !canExist) {
                 break clientLoop;
             }
 
             LinkedList<DinnerKit> tmpmenu = Main.getMenu();
 
             //tworzenie zamówienia
-            int countChoose = random.nextInt(3)+1;
+            int countChoose = random.nextInt(3) + 1;
             DinnerKit[] dinnerKits = new DinnerKit[countChoose];
-            for (int i = 0 ; i<countChoose; i++){
+            for (int i = 0; i < countChoose; i++) {
                 int chooseKit = random.nextInt(tmpmenu.size());
                 dinnerKits[i] = tmpmenu.get(chooseKit);
             }
-            Order order = new Order(Main.getOrderNumber(),address,System.currentTimeMillis(),dinnerKits);
+            Order order = new Order(Main.getOrderNumber(), address, System.currentTimeMillis(), dinnerKits);
             Main.addOrderToList(order);//dodanie zamówienia do listy zamówień
             System.out.println("Zamówiłem");
             myOrder = order;
 
             //czekanie na dostarczenie zamówienia
-            while (myOrder!=null){
+            while (myOrder != null) {
                 //klient czeka na zrealizowanie zamówienia, program został zamknięty
-                if (!Main.isClientCanWork()){
+                if (!Main.isClientCanWork()) {
                     break clientLoop;
                 }
                 waitTime(1000);
@@ -67,7 +67,6 @@ public abstract class Client extends Human implements Runnable {
         }
         System.out.println("Kończę działanie");
     }
-
 
 
     public boolean isCanExist() {
@@ -80,9 +79,10 @@ public abstract class Client extends Human implements Runnable {
 
     /**
      * Metoda czekania określoną liczbę milisekund.
+     *
      * @param time czas czekania w milisekundach
      */
-    private void waitTime(int time){
+    private void waitTime(int time) {
         try {
             sleep(time);
         } catch (InterruptedException e) {
@@ -90,27 +90,28 @@ public abstract class Client extends Human implements Runnable {
         }
     }
 
-    public Order getMyOrder(){
+    public Order getMyOrder() {
         return myOrder;
     }
 
     /**
      * Metoda wywoływana po dostarczeniu zamówienia przez dostawcę. Dostarczenie zamówienia.
      */
-    public void getMyOrderFromDeliverer(){
+    public void getMyOrderFromDeliverer() {
         System.out.println("Zabieram dostarczone zamówienie");
         myOrder = null;
     }
 
     /**
      * Konstruktor klasy Client Human bez adresu email
+     *
      * @param name
      * @param surname
-     * @param code -kod zamawiającego
+     * @param code    -kod zamawiającego
      * @param address - adres dostawy
      */
     public Client(String name, String surname, int code,
-                  String address){
+                  String address) {
         super(name, surname);
         this.code = code;
         this.address = address;
@@ -119,14 +120,15 @@ public abstract class Client extends Human implements Runnable {
 
     /**
      * Konstruktor klasy Client Human z adresem email
+     *
      * @param name
      * @param surname
      * @param code
      * @param address
-     * @param email - adres email
+     * @param email   - adres email
      */
     public Client(String name, String surname, int code,
-                  String address, String email){
+                  String address, String email) {
         super(name, surname);
         this.code = code;
         this.address = address;
