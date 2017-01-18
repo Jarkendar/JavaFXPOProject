@@ -75,7 +75,7 @@ public class Main extends Application {
     /**
      * Metoda dodawania posiłku, dodatkowo tworzy zestaw obiadowy w którym może znaleźć się stworzony posiłek.
      */
-    public static void addMealToMealList(){
+    public static void addMealToMealList() {
         synchronized (guardian_meal) {
             randomGenerator.addRandomMeal(meals_list);
             createDinnerKit();
@@ -84,26 +84,28 @@ public class Main extends Application {
 
     /**
      * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia dostawcy.
+     *
      * @return true - jeśli można, false -jeśli nie można
      */
     synchronized
-    public static boolean canOrderDeleteDeliverer(){
-        if (countOrderToDeleteDeliverer == deliverers_list.size()){
+    public static boolean canOrderDeleteDeliverer() {
+        if (countOrderToDeleteDeliverer == deliverers_list.size()) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
 
     /**
      * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia klienta.
+     *
      * @return true - jeśli można, false -jeśli nie można
      */
     synchronized
-    public static boolean canOrderDeleteClient(){
-        if (countOrderToDeleteClient == clients_list.size()){
+    public static boolean canOrderDeleteClient() {
+        if (countOrderToDeleteClient == clients_list.size()) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
@@ -112,7 +114,7 @@ public class Main extends Application {
      * Metoda dodaje 1 do licznika zleceń usunięcia dostawców.
      */
     synchronized
-    private static void addToCountOrderToDeleteDeliverer(){
+    private static void addToCountOrderToDeleteDeliverer() {
         countOrderToDeleteDeliverer++;
     }
 
@@ -120,7 +122,7 @@ public class Main extends Application {
      * Metoda odejmuje 1 od licznika zleceń usunięcia dostawców.
      */
     synchronized
-    private static void subFromCountOrderToDeleteDeliverer(){
+    private static void subFromCountOrderToDeleteDeliverer() {
         countOrderToDeleteDeliverer--;
     }
 
@@ -128,7 +130,7 @@ public class Main extends Application {
      * Metoda dodaje 1 do licznika zleceń usunięcia klientów.
      */
     synchronized
-    private static void addToCountOrderToDeleteClient(){
+    private static void addToCountOrderToDeleteClient() {
         countOrderToDeleteClient++;
     }
 
@@ -136,7 +138,7 @@ public class Main extends Application {
      * Metoda odejmuje 1 od licznika zleceń usunięcia klientów.
      */
     synchronized
-    private static void subFromCountOrderToDeleteClient(){
+    private static void subFromCountOrderToDeleteClient() {
         countOrderToDeleteClient--;
     }
 
@@ -152,6 +154,7 @@ public class Main extends Application {
 
     /**
      * Metoda sprawdza rozmiar listy klientów.
+     *
      * @return rozmiar listy klientów.
      */
     public static int getSizeOfClientList() {
@@ -160,19 +163,20 @@ public class Main extends Application {
 
     /**
      * Metoda sprawdza rozmiar listy dostawców.
+     *
      * @return rozmiar listy dostawców.
      */
-    public static int getSizeOfDelivererList(){
+    public static int getSizeOfDelivererList() {
         return deliverers_list.size();
     }
 
     /**
      * Metoda ustawia jednemu klientowi status braku pozwolenia na egzystencję.
      */
-    public static void setClientToNotExist(){
+    public static void setClientToNotExist() {
         synchronized (guardian_client) {
             addToCountOrderToDeleteClient();
-            for (int i = 0; i<clients_list.size(); i++) {
+            for (int i = 0; i < clients_list.size(); i++) {
                 if (clients_list.get(i).isCanExist()) {
                     clients_list.get(i).setCanExist(false);
                     break;
@@ -184,11 +188,11 @@ public class Main extends Application {
     /**
      * Metoda ustawia jednemu dostawcy status braku pozwolenia na egzystencję.
      */
-    public static void setDelivererToNotExist(){
-        synchronized (guardian_deliverer){
+    public static void setDelivererToNotExist() {
+        synchronized (guardian_deliverer) {
             addToCountOrderToDeleteDeliverer();
-            for (int i = 0; i<deliverers_list.size(); i++){
-                if (deliverers_list.get(i).isCanExist()){
+            for (int i = 0; i < deliverers_list.size(); i++) {
+                if (deliverers_list.get(i).isCanExist()) {
                     deliverers_list.get(i).setCanExist(false);
                     break;
                 }
@@ -199,11 +203,11 @@ public class Main extends Application {
     /**
      * Metoda usuwa dostawców z listy dostawców.
      */
-    public static void delDelivererFromList(){
-        synchronized (guardian_deliverer){
+    public static void delDelivererFromList() {
+        synchronized (guardian_deliverer) {
             int size = deliverers_list.size();
-            for (int i = 0; i<size; i++){
-                if (threadsDeliverer.size() != 0 && !threadsDeliverer.get(i).isAlive()){
+            for (int i = 0; i < size; i++) {
+                if (threadsDeliverer.size() != 0 && !threadsDeliverer.get(i).isAlive()) {
                     threadsDeliverer.remove(i);
                     deliverers_list.remove(i);
                     i--;
@@ -217,8 +221,8 @@ public class Main extends Application {
     /**
      * Metoda dodaje dostawców do listy i włącza im wątek.
      */
-    public static void addDelivererToList(){
-        synchronized (guardian_deliverer){
+    public static void addDelivererToList() {
+        synchronized (guardian_deliverer) {
             randomGenerator.addRandomDeliverer(deliverers_list, guardian_deliverer);//tworzenie dostawcy
             threadsDeliverer.addLast(new Thread(deliverers_list.getLast()));//dodanie go do listy wątków dostawców
             threadsDeliverer.getLast().setDaemon(true);
@@ -230,10 +234,10 @@ public class Main extends Application {
     /**
      * Metoda usuwa klienta z listy, zsynchronizoawana obiektem guardian_client.
      */
-    public static void delClientFromList(){
+    public static void delClientFromList() {
         synchronized (guardian_client) {
             int size = clients_list.size();
-            for (int i =0 ; i<size; i++) {
+            for (int i = 0; i < size; i++) {
                 if (threadsClient.size() != 0 && !threadsClient.get(i).isAlive()) {
                     threadsClient.remove(i);
                     clients_list.remove(i);
@@ -260,6 +264,7 @@ public class Main extends Application {
 
     /**
      * Getter listy posiłków.
+     *
      * @return lista posiłków
      */
     public static LinkedList<Meal> getMeals_list() {
@@ -438,14 +443,12 @@ public class Main extends Application {
         Random random = new Random(System.nanoTime());
 
 
-
-
         map = new Map(width, lenght, wRestaurant, lRestaurant);
         map.setMapGUI(mapsButtons);
 
 //***********TWORZENIE POJAZDÓW RESTAURACJI I NAPEŁNIANIE ZBIORNIKA PALIWA***********
         randomGenerator.createVehicleForRestaurant(vehicles, vehicleNumber);
-        for (Vehicle x: vehicles){
+        for (Vehicle x : vehicles) {
             x.fillTankVehicle();
         }
 //***********TWORZENIE WSTĘPNEJ LISTY POSIŁKÓW**********
@@ -468,7 +471,7 @@ public class Main extends Application {
             public void run() {
                 super.run();
                 System.out.println("Włączone odświeżanie");
-                while (timeStop){
+                while (timeStop) {
                     try {
                         sleep(500);
                     } catch (InterruptedException e) {
@@ -480,7 +483,7 @@ public class Main extends Application {
                         public void run() {
                             delClientFromList();
                             delDelivererFromList();
-                            map.refreshMap(clients_list,deliverers_list);
+                            map.refreshMap(clients_list, deliverers_list);
                         }
                     });
                 }

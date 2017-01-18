@@ -22,13 +22,14 @@ public class Controller {
     /**
      * Tutaj inicjalizuje się wszystkie zmienne.
      */
-    public void initialize(){
-     //   EventHandler handler = new EventHandler(){};//tworzenie uchwytu dla akcji
+    public void initialize() {
+        //   EventHandler handler = new EventHandler(){};//tworzenie uchwytu dla akcji
 
     }
 
     /**
      * Dodanie klienta.
+     *
      * @param mouseEvent
      */
     public void addClient(MouseEvent mouseEvent) {
@@ -37,23 +38,24 @@ public class Controller {
             Main.addClientToList();
             label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
             button_Del_Client.setDisable(false);
-        }else {
+        } else {
             label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
         }
     }
 
     /**
      * Usunięcie klienta.
+     *
      * @param mouseEvent
      */
     public void delClient(MouseEvent mouseEvent) {
         synchronized (this) {
             if (Main.canOrderDeleteClient()) {
                 Main.setClientToNotExist();
-            }else {
+            } else {
                 button_Del_Client.setDisable(true);
             }
-            if(Integer.parseInt(label_Count_Client.getText()) != 0) {
+            if (Integer.parseInt(label_Count_Client.getText()) != 0) {
                 label_Count_Client.setText(Integer.toString(Integer.parseInt(label_Count_Client.getText()) - 1));
             }
             if (Main.getSizeOfClientList() == 0) {
@@ -64,6 +66,7 @@ public class Controller {
 
     /**
      * Dodanie dostawcy.
+     *
      * @param mouseEvent
      */
     public void addDeliverer(MouseEvent mouseEvent) {
@@ -71,23 +74,24 @@ public class Controller {
             Main.addDelivererToList();
             label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
             button_Del_Deliverer.setDisable(false);
-        }else {
+        } else {
             label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
         }
     }
 
     /**
      * Usunięcie dostawcy.
+     *
      * @param mouseEvent
      */
     public void delDeliverer(MouseEvent mouseEvent) {
         synchronized (this) {
             if (Main.canOrderDeleteDeliverer()) {
                 Main.setDelivererToNotExist();
-            }else {
+            } else {
                 button_Del_Deliverer.setDisable(true);
             }
-            if(Integer.parseInt(label_Count_Deliverer.getText()) != 0) {
+            if (Integer.parseInt(label_Count_Deliverer.getText()) != 0) {
                 label_Count_Deliverer.setText(Integer.toString(Integer.parseInt(label_Count_Deliverer.getText()) - 1));
             }
             if (Main.getSizeOfClientList() == 0) {
@@ -98,6 +102,7 @@ public class Controller {
 
     /**
      * Dodanie posiłku.
+     *
      * @param mouseEvent
      */
     public void addMeal(MouseEvent mouseEvent) {

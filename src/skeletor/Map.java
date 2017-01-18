@@ -35,6 +35,7 @@ public class Map {
 
     /**
      * Ustawianie macierzy przycisków do mapy
+     *
      * @param mapGUI macierzy przycisków
      */
     synchronized
@@ -44,7 +45,7 @@ public class Map {
     }
 
     synchronized
-    public void refreshMap(LinkedList<Client> clients, LinkedList<Deliverer> deliverers){
+    public void refreshMap(LinkedList<Client> clients, LinkedList<Deliverer> deliverers) {
         clearMap();
         setRestaurantOnMap();
         setClientOnMap(clients);
@@ -52,10 +53,10 @@ public class Map {
     }
 
     synchronized
-    public void setDelivererOnMap(LinkedList<Deliverer> delivererLinkedList){
-        for (Deliverer x: delivererLinkedList){
+    public void setDelivererOnMap(LinkedList<Deliverer> delivererLinkedList) {
+        for (Deliverer x : delivererLinkedList) {
             int posX = x.getPositionX(), posY = x.getPositionY();
-            if (!mapGUI[posX][posY].getText().equals("K") && !mapGUI[posX][posY].getText().equals("R")){
+            if (!mapGUI[posX][posY].getText().equals("K") && !mapGUI[posX][posY].getText().equals("R")) {
                 mapGUI[posX][posY].setText("S");
                 mapGUI[posX][posY].setVisible(true);
                 mapGUI[posX][posY].setTextFill(Color.WHITE);
@@ -65,9 +66,9 @@ public class Map {
     }
 
     synchronized
-    private void clearMap(){
-        for (int i = 0; i<Main.getWidth(); i++){
-            for (int k = 0; k<Main.getLenght(); k++){
+    private void clearMap() {
+        for (int i = 0; i < Main.getWidth(); i++) {
+            for (int k = 0; k < Main.getLenght(); k++) {
                 mapGUI[i][k].setText("0");
                 mapGUI[i][k].setVisible(false);
                 mapGUI[i][k].setStyle("-fx-background-color: #fff;");
@@ -76,9 +77,9 @@ public class Map {
     }
 
     synchronized
-    private void setClientOnMap(LinkedList<Client> clientLinkedList){
-        for (int i = 0; i<Main.getWidth(); i++){
-            for (int k = 0; k<Main.getLenght(); k++){
+    private void setClientOnMap(LinkedList<Client> clientLinkedList) {
+        for (int i = 0; i < Main.getWidth(); i++) {
+            for (int k = 0; k < Main.getLenght(); k++) {
                 mapGUI[i][k].setText("0");
                 mapGUI[i][k].setVisible(false);
                 mapGUI[i][k].setStyle("-fx-background-color: #fff;");

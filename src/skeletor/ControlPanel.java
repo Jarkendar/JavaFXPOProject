@@ -132,7 +132,7 @@ public class ControlPanel {
         RandomGenerator randomGenerator = new RandomGenerator();
 //***********TWORZENIE POJAZDÓW RESTAURACJI I NAPEŁNIANIE ZBIORNIKA PALIWA***********
         randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
-        for (Vehicle x: vehicles){
+        for (Vehicle x : vehicles) {
             x.fillTankVehicle();
         }
 //**********TWORZENIE LISTY KLIENTÓW**********************
