@@ -55,6 +55,7 @@ public class Main extends Application {
 
     //zmienna zliczająca ilość zleceń usunięć z listy klientów
     private static volatile int countOrderToDeleteClient = 0;
+    private static volatile int countOrderToDeleteDeliverer = 0;
 
     private static Controller controller;
     //zmienna zabijająca wszystkich klientów
@@ -82,12 +83,12 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia
+     * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia dostawcy.
      * @return true - jeśli można, false -jeśli nie można
      */
     synchronized
-    public static boolean canOrderDeleteClient(){
-        if (countOrderToDeleteClient == clients_list.size()-1){
+    public static boolean canOrderDeleteDeliverer(){
+        if (countOrderToDeleteDeliverer == deliverers_list.size()){
             return false;
         }else {
             return true;
@@ -95,7 +96,36 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda dodaje 1 do licznika zleceń usunięcia.
+     * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia klienta.
+     * @return true - jeśli można, false -jeśli nie można
+     */
+    synchronized
+    public static boolean canOrderDeleteClient(){
+        if (countOrderToDeleteClient == clients_list.size()){
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    /**
+     * Metoda dodaje 1 do licznika zleceń usunięcia dostawców.
+     */
+    synchronized
+    private static void addToCountOrderToDeleteDeliverer(){
+        countOrderToDeleteDeliverer++;
+    }
+
+    /**
+     * Metoda odejmuje 1 od licznika zleceń usunięcia dostawców.
+     */
+    synchronized
+    private static void subFromCountOrderToDeleteDeliverer(){
+        countOrderToDeleteDeliverer--;
+    }
+
+    /**
+     * Metoda dodaje 1 do licznika zleceń usunięcia klientów.
      */
     synchronized
     private static void addToCountOrderToDeleteClient(){
@@ -103,7 +133,7 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda odejmuje 1 od licznika zleceń usunięcia.
+     * Metoda odejmuje 1 od licznika zleceń usunięcia klientów.
      */
     synchronized
     private static void subFromCountOrderToDeleteClient(){
@@ -137,7 +167,7 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda ustwia jednemu klientowi, status braku pozwolenia na egzystencje.
+     * Metoda ustawia jednemu klientowi status braku pozwolenia na egzystencję.
      */
     public static void setClientToNotExist(){
         synchronized (guardian_client) {
@@ -152,15 +182,37 @@ public class Main extends Application {
     }
 
     /**
-     * Metoda odświeżania mapy.
+     * Metoda ustawia jednemu dostawcy status braku pozwolenia na egzystencję.
      */
-    public static void pleaseMapToRefresh(){
-        synchronized (guardian_Map){
-            map.refreshMap(clients_list, deliverers_list);
+    public static void setDelivererToNotExist(){
+        synchronized (guardian_deliverer){
+            addToCountOrderToDeleteDeliverer();
+            for (int i = 0; i<deliverers_list.size(); i++){
+                if (deliverers_list.get(i).isCanExist()){
+                    deliverers_list.get(i).setCanExist(false);
+                    break;
+                }
+            }
         }
     }
 
-
+    /**
+     * Metoda usuwa dostawców z listy dostawców.
+     */
+    public static void delDelivererFromList(){
+        synchronized (guardian_deliverer){
+            int size = deliverers_list.size();
+            for (int i = 0; i<size; i++){
+                if (threadsDeliverer.size() != 0 && !threadsDeliverer.get(i).isAlive()){
+                    threadsDeliverer.remove(i);
+                    deliverers_list.remove(i);
+                    i--;
+                    size--;
+                    subFromCountOrderToDeleteDeliverer();
+                }
+            }
+        }
+    }
 
     /**
      * Metoda dodaje dostawców do listy i włącza im wątek.
@@ -169,6 +221,7 @@ public class Main extends Application {
         synchronized (guardian_deliverer){
             randomGenerator.addRandomDeliverer(deliverers_list, guardian_deliverer);//tworzenie dostawcy
             threadsDeliverer.addLast(new Thread(deliverers_list.getLast()));//dodanie go do listy wątków dostawców
+            threadsDeliverer.getLast().setDaemon(true);
             threadsDeliverer.getLast().start();//włączenie go
             System.out.println(deliverers_list.size());
         }
@@ -199,6 +252,7 @@ public class Main extends Application {
         synchronized (guardian_client) {
             randomGenerator.addRandomClient(clients_list);//tworzenie klienta
             threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
+            threadsClient.getLast().setDaemon(true);
             threadsClient.getLast().start();//włączenie go
             System.out.println(clients_list.size());
         }
@@ -413,7 +467,7 @@ public class Main extends Application {
             @Override
             public void run() {
                 super.run();
-                System.out.println("Włączone odświerzanie");
+                System.out.println("Włączone odświeżanie");
                 while (timeStop){
                     try {
                         sleep(500);
@@ -425,6 +479,7 @@ public class Main extends Application {
                         @Override
                         public void run() {
                             delClientFromList();
+                            delDelivererFromList();
                             map.refreshMap(clients_list,deliverers_list);
                         }
                     });

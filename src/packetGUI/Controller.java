@@ -38,7 +38,7 @@ public class Controller {
             label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
             button_Del_Client.setDisable(false);
         }else {
-            label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()) + " osiągnięto limit klientów." );
+            label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
         }
     }
 
@@ -57,7 +57,7 @@ public class Controller {
                 label_Count_Client.setText(Integer.toString(Integer.parseInt(label_Count_Client.getText()) - 1));
             }
             if (Main.getSizeOfClientList() == 0) {
-                label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()) + " brak klientów.");
+                label_Count_Client.setText(Integer.toString(Main.getSizeOfClientList()));
             }
         }
     }
@@ -72,7 +72,7 @@ public class Controller {
             label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
             button_Del_Deliverer.setDisable(false);
         }else {
-            label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()) + " osiągnięto limit dostawców." );
+            label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
         }
     }
 
@@ -81,8 +81,18 @@ public class Controller {
      * @param mouseEvent
      */
     public void delDeliverer(MouseEvent mouseEvent) {
-        if (Integer.parseInt(label_Count_Deliverer.getText()) != 0){
-            label_Count_Deliverer.setText(Integer.toString(Integer.parseInt(label_Count_Deliverer.getText())-1));
+        synchronized (this) {
+            if (Main.canOrderDeleteDeliverer()) {
+                Main.setDelivererToNotExist();
+            }else {
+                button_Del_Deliverer.setDisable(true);
+            }
+            if(Integer.parseInt(label_Count_Deliverer.getText()) != 0) {
+                label_Count_Deliverer.setText(Integer.toString(Integer.parseInt(label_Count_Deliverer.getText()) - 1));
+            }
+            if (Main.getSizeOfClientList() == 0) {
+                label_Count_Deliverer.setText(Integer.toString(Main.getSizeOfDelivererList()));
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package skeletor.Person;
 
 import packetGUI.Main;
-import skeletor.ControlPanel;
 import skeletor.Enums.*;
 import skeletor.Order;
 import skeletor.Transport.Car;
@@ -195,7 +194,7 @@ public class Deliverer extends Human implements Runnable {
             waitTime(1000);
             System.out.println(PESEL + " opuszczam " + vehicle.getRegistration_number());
             synchronized (guardian) {
-                leaveVehicleOnParking(ControlPanel.getVehicles());
+                leaveVehicleOnParking(Main.getVehicles());
             }
         }
         System.out.println("Kończę działanie dostawca");
@@ -207,6 +206,10 @@ public class Deliverer extends Human implements Runnable {
 
     public int getPositionY() {
         return positionY;
+    }
+
+    public boolean isCanExist() {
+        return canExist;
     }
 
     public void setCanExist(boolean canExist) {
