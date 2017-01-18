@@ -188,7 +188,7 @@ public class Deliverer extends Human implements Runnable {
                     System.out.println(PESEL + " aktualny stan paliwa " + vehicle.getActualTankValue());
                 }
                 System.out.println(PESEL + " " + positionX + "; " + positionY);
-                waitTime(1000);//symulacja tur
+                waitTime(2000);//symulacja tur
             }
 //opuszczenie pojazdu przez dostawcę
             waitTime(1000);
@@ -198,6 +198,10 @@ public class Deliverer extends Human implements Runnable {
             }
         }
         System.out.println("Kończę działanie dostawca");
+    }
+
+    public Order getDelivererOrder() {
+        return delivererOrder;
     }
 
     public int getPositionX() {
@@ -221,7 +225,7 @@ public class Deliverer extends Human implements Runnable {
      *
      * @return wartość true - jeśli kierowca pracuje w dany dzień o danej godzinie, false - w przeciwnym wypadku
      */
-    private boolean canWork() {
+    public boolean canWork() {
         Date date = new Date(System.currentTimeMillis());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

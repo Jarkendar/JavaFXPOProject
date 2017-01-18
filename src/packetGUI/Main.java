@@ -13,11 +13,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import skeletor.*;
 import skeletor.Food.Meal;
-import skeletor.Person.Client;
-import skeletor.Person.Deliverer;
+import skeletor.Person.*;
+import skeletor.Transport.Car;
 import skeletor.Transport.Vehicle;
 
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ import static java.lang.Thread.sleep;
 
 
 public class Main extends Application {
+    VBox containerOnInfo;
     // strażnicy
     private final static Object guardian_client = new Object();
     private final static Object guardian_meal = new Object();
@@ -85,7 +87,7 @@ public class Main extends Application {
     /**
      * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia dostawcy.
      *
-     * @return true - jeśli można, false -jeśli nie można
+     * @return true - jeśli można, false - jeśli nie można
      */
     synchronized
     public static boolean canOrderDeleteDeliverer() {
@@ -99,7 +101,7 @@ public class Main extends Application {
     /**
      * Metoda sprawdza czy można dodać jeszcze jedno zlecenie usunięcia klienta.
      *
-     * @return true - jeśli można, false -jeśli nie można
+     * @return true - jeśli można, false - jeśli nie można
      */
     synchronized
     public static boolean canOrderDeleteClient() {
@@ -262,11 +264,6 @@ public class Main extends Application {
         }
     }
 
-    /**
-     * Getter listy posiłków.
-     *
-     * @return lista posiłków
-     */
     public static LinkedList<Meal> getMeals_list() {
         return meals_list;
     }
@@ -358,6 +355,110 @@ public class Main extends Application {
         Main.orderLinkedList = orderLinkedList;
     }
 
+    private void killVboxInfoChildren() {
+        containerOnInfo.getChildren().remove(0, containerOnInfo.getChildren().size());
+    }
+
+    /**
+     * Myświetlenie danych restauracji.
+     */
+    private void addRestaurantInfoToVbox() {
+        containerOnInfo.getChildren().addAll(new Label("Moja restauracja."), new Label("Położona " + wRestaurant + ":" + lRestaurant));
+    }
+
+    /**
+     * Wyświetlenie danych klienta.
+     *
+     * @param client kliknięty klient
+     */
+    private void addClientInfoToVbox(Client client) {
+        Label type;
+        if (client instanceof Occasional) {
+            type = new Label("OKAZJONALNY");
+        } else if (client instanceof Regular) {
+            type = new Label("REGULARNY");
+        } else {
+            type = new Label("FIRMOWY");
+        }
+        Label order;
+        if (client.getMyOrder() == null) {
+            order = new Label("Nie zamówił");
+        } else {
+            order = new Label("Zamówił.");
+        }
+        containerOnInfo.getChildren().addAll(type, new Label("Imię " + client.getName())
+                , new Label("Nazwisko " + client.getSurname()), new Label("Adres " + client.getAddress())
+                , new Label("Kod zamawiającego " + client.getCode()), order);
+    }
+
+    /**
+     * Wyświetlenie danych dostawcy.
+     *
+     * @param deliverer kliknięty dostawca
+     */
+    private void addDelivererInfoToVbox(Deliverer deliverer) {
+        Label canWork;
+        if (deliverer.canWork()) {
+            canWork = new Label("Pracuję");
+        } else {
+            canWork = new Label("Mam wolne");
+        }
+        Label hasOrder;
+        Label orderAddress;
+        if (deliverer.getDelivererOrder() == null) {
+            hasOrder = new Label("Wracam do restauracji");
+            orderAddress = new Label("");
+        } else {
+            hasOrder = new Label("Jadę do klienta");
+            orderAddress = new Label("Jadę do " + deliverer.getDelivererOrder().getAddress());
+        }
+        Label vehicleType;
+        if (deliverer.getVehicle() instanceof Car) {
+            vehicleType = new Label("Jadę samochodem");
+        } else {
+            vehicleType = new Label("Jadę skuterem");
+        }
+        containerOnInfo.getChildren().addAll(new Label("DOSTAWCA"), new Label("PESEL " + deliverer.getPESEL())
+                , new Label("Imię " + deliverer.getName()), new Label("Nazwisko " + deliverer.getSurname())
+                , canWork, hasOrder, vehicleType, new Label("Pojemność baku " + deliverer.getVehicle().getActualTankValue() + "l")
+                , orderAddress);
+    }
+
+    /**
+     * Sprawdzenie co zostało kliknięte na mapie, przez użytkownika.
+     *
+     * @param buttonCoordinate współrzędne przycisku
+     */
+    public void checkWhatUserPressOnMap(String buttonCoordinate) {
+        String[] tmp = buttonCoordinate.split(",");
+        int posX = Integer.parseInt(tmp[0]);
+        int posY = Integer.parseInt(tmp[1]);
+        if (posX == wRestaurant && posY == lRestaurant) {
+            killVboxInfoChildren();
+            addRestaurantInfoToVbox();
+            System.out.println("To restauracja.");
+        }
+        synchronized (guardian_client) {
+            for (Client x : clients_list) {
+                if (x.getAddress().equals(posX + ":" + posY)) {
+                    killVboxInfoChildren();
+                    addClientInfoToVbox(x);
+                    System.out.println("To klient.");
+                    break;
+                }
+            }
+        }
+        synchronized (guardian_deliverer) {
+            for (Deliverer x : deliverers_list) {
+                if (x.getPositionX() == posX && x.getPositionY() == posY) {
+                    killVboxInfoChildren();
+                    addDelivererInfoToVbox(x);
+                    System.out.println("To dostawca.");
+                    break;
+                }
+            }
+        }
+    }
 
     //**********************************************************************************************
     @Override
@@ -383,6 +484,7 @@ public class Main extends Application {
         GridPane gridPaneMap = (GridPane) children.get(11); //wyciągnięcie mapy z view
 //        System.out.println(children.size());
         Label coordinateLabel = (Label) children.get(13);
+        containerOnInfo = (VBox) children.get(14);
 //        System.out.println("gridpanelMap "+gridPaneMap.toString());
         gridPaneMap.setAlignment(Pos.CENTER);
         //25 rzędów | 30 kolumn
@@ -402,6 +504,7 @@ public class Main extends Application {
                     @Override
                     public void handle(ActionEvent event) {
                         //wyświetlenie współrzędnych przycisku, jego ID
+                        checkWhatUserPressOnMap(((Button) event.getSource()).getId().toString());
                         coordinateLabel.setText("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
                         System.out.println("Kliknięto w pole " + ((Button) event.getSource()).getId().toString());
                     }
