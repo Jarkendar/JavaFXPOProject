@@ -420,7 +420,8 @@ public class Main extends Application {
         }
         containerOnInfo.getChildren().addAll(new Label("DOSTAWCA"), new Label("PESEL " + deliverer.getPESEL())
                 , new Label("Imię " + deliverer.getName()), new Label("Nazwisko " + deliverer.getSurname())
-                , canWork, hasOrder, vehicleType, new Label("Pojemność baku " + deliverer.getVehicle().getActualTankValue() + "l")
+                , canWork, hasOrder, vehicleType
+                , new Label("Pojemność baku " + String.format("%.2f", deliverer.getVehicle().getActualTankValue()) + "l")
                 , orderAddress);
     }
 
