@@ -7,7 +7,6 @@ import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
 import skeletor.Transport.Vehicle;
 
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -23,7 +22,7 @@ public class Deliverer extends Human implements Runnable {
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
-    private  Vehicle vehicle = null;
+    private transient Vehicle vehicle = null;
     private transient Object guardian;
     private transient Order delivererOrder;
     private int positionX;

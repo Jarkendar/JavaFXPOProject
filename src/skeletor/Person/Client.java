@@ -23,7 +23,7 @@ public abstract class Client extends Human implements Runnable{
     private long time_order;
     private String address;
     private String email = "";
-    private Order myOrder;
+    private transient Order myOrder;
 
     @Override
     public void run() {

@@ -7,6 +7,8 @@ import javafx.scene.input.MouseEvent;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 
+import static java.lang.Thread.sleep;
+
 public class Controller {
 
     public Button button_Del_Client;
@@ -39,6 +41,9 @@ public class Controller {
     public MenuItem DeserMenuItem;
     public SplitMenuButton SubCategoryMenu;
     public TextField TimeDurationTextField;
+    public Button saveButton;
+    public Button readButton;
+    public Button restartButton;
 
 
     /**
@@ -285,5 +290,20 @@ public class Controller {
         }
         label_Count_Meal.setText(Integer.toString(Main.getMeals_list().size()));
 
+    }
+
+    public void saveAllToFile(ActionEvent event) {
+        Main.saveAll();
+        System.out.println("Zapisano");
+    }
+
+    public void readAllFromFile(ActionEvent event) {
+  //      Main.readAll();
+        System.out.println("Wczytano");
+    }
+
+    public void restartClick(ActionEvent event) {
+        Main.delAllFile();
+        System.out.println("Usunąłem");
     }
 }

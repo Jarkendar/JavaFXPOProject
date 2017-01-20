@@ -1,7 +1,5 @@
 package packetGUI;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -73,13 +71,13 @@ public class Main extends Application {
     private static volatile boolean timeStop = true;
 
     //ścieżki dostępu
-    private final String pathNameClient = "ClientList.txt";
-    private final String pathNameDeliverer = "DelivererList.txt";
-    private final String pathNameOrder = "OrderList.txt";
-    private final String pathNameMeal = "MealList.txt";
-    private final String pathNameDinnerKit = "DinnerKitList.txt";
-    private final String pathNameRestaurant = "RestaurantList.txt";
-    private final String pathNameVehicle = "VehicleList.txt";
+    private static final String pathNameClient = "ClientList.txt";
+    private static final String pathNameDeliverer = "DelivererList.txt";
+    private static final String pathNameOrder = "OrderList.txt";
+    private static final String pathNameMeal = "MealList.txt";
+    private static final String pathNameDinnerKit = "DinnerKitList.txt";
+    private static final String pathNameRestaurant = "RestaurantList.txt";
+    private static final String pathNameVehicle = "VehicleList.txt";
 
     public static LinkedList<Deliverer> getDeliverers_list() {
         return deliverers_list;
@@ -514,7 +512,7 @@ public class Main extends Application {
         containerOnInfo.getChildren().addAll(new Label("DOSTAWCA"), new Label("PESEL " + deliverer.getPESEL())
                 , new Label("Imię " + deliverer.getName()), new Label("Nazwisko " + deliverer.getSurname())
                 , canWork, hasOrder, vehicleType
-                , new Label("Pojemność baku " + String.format("%.2f", deliverer.getVehicle().getActualTankValue()) + "l")
+                , new Label("Pojemność baku " + String.format("%.2f", deliverer.getVehicle().getActualTankValue()) + " l")
                 , orderAddress);
     }
 
@@ -527,31 +525,350 @@ public class Main extends Application {
         String[] tmp = buttonCoordinate.split(",");
         int posX = Integer.parseInt(tmp[0]);
         int posY = Integer.parseInt(tmp[1]);
-        if (posX == wRestaurant && posY == lRestaurant) {
-            killVboxInfoChildren();
-            addRestaurantInfoToVbox();
-            System.out.println("To restauracja.");
+        Mark :while (true) {
+            if (posX == wRestaurant && posY == lRestaurant) {
+                killVboxInfoChildren();
+                addRestaurantInfoToVbox();
+                System.out.println("To restauracja.");
+                break Mark;
+            }
+            synchronized (guardian_client) {
+                for (Client x : clients_list) {
+                    if (x.getAddress().equals(posX + ":" + posY)) {
+                        killVboxInfoChildren();
+                        addClientInfoToVbox(x);
+                        System.out.println("To klient.");
+                        break Mark;
+                    }
+                }
+            }
+            synchronized (guardian_deliverer) {
+                for (Deliverer x : deliverers_list) {
+                    if (x.getPositionX() == posX && x.getPositionY() == posY) {
+                        killVboxInfoChildren();
+                        addDelivererInfoToVbox(x);
+                        System.out.println("To dostawca.");
+                        break Mark;
+                    }
+                }
+            }
         }
+    }
+
+    /**
+     * Metoda tworzy zestaw obiadowy.
+     */
+    private static void createDinnerKit() {
+        synchronized (guardian_DinnerKit) {
+            Random random = new Random(System.nanoTime());
+            int count_of_meal = random.nextInt(4) + 1;
+            Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
+            for (int k = 0; k < count_of_meal; k++) {
+                try {
+                    sleep(1);
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
+                int number_of_meal = random.nextInt(meals_list.size());
+                meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
+            }
+            menu.addLast(new DinnerKit((byte) (menu.size() + 1), meals_in_DinnerKit));
+        }
+    }
+
+    /**
+     * Wczytuje klientów z pliku i dodaje ich do listy kientów, wraz z włączeniem im wątku.
+     */
+    private static void readClients(){
+        File file = new File(pathNameClient);
+        if (file.exists()) {
+            try {
+                String mark;
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true) {
+                    mark =(String) objectInputStream.readObject();
+                    System.out.println(mark);
+                    if (mark.equals("Occasional")) {
+                        Occasional x = (Occasional) objectInputStream.readObject();
+                        addClientToList(x);
+                    } else if (mark.equals("Regular")) {
+                        Regular x = (Regular) objectInputStream.readObject();
+                        addClientToList(x);
+                    } else if (mark.equals("Corporate")){
+                        Corporate x = (Corporate) objectInputStream.readObject();
+                        addClientToList(x);
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("Koniec pliku klientów.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Odczyt dostawców z pliku.
+     */
+    private static void readDeliverer(){
+        File file = new File(pathNameDeliverer);
+        if (file.exists()){
+            try{
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true){
+                    addDelivererToList(((Deliverer)objectInputStream.readObject()));
+                    System.out.println("wczytałem dostawce");
+                }
+            }catch (IOException e){
+                System.out.println("Koniec pliku dostawców.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Zapis dostawców do pliku.
+     */
+    private static void saveDeliverer(){
+        File file = new File(pathNameDeliverer);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Deliverer x: deliverers_list){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Zapis listy klientów do pliku.
+     */
+    private static void saveClients(){
+        File file = new File(pathNameClient);
+        ObjectOutputStream objectOutputStream;
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Client x: clients_list){
+                String mark = "";
+                if (x instanceof Occasional){
+                    mark = "Occasional";
+                }else if (x instanceof Regular){
+                    mark = "Regular";
+                }else if (x instanceof Corporate){
+                    mark = "Corporate";
+                }
+                objectOutputStream.writeObject(mark);
+                if (mark.equals("Occasional")) {
+                    objectOutputStream.writeObject((Occasional)x);
+                } else if (mark.equals("Regular")) {
+                    objectOutputStream.writeObject((Regular)x);
+                } else if (mark.equals("Corporate")){
+                    objectOutputStream.writeObject((Corporate)x);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Odczyt koordynatów restauracji z pliku.
+     */
+    public static void readRestaurant(){
+        File file = new File(pathNameRestaurant);
+        if (file.exists()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                wRestaurant = (Integer) objectInputStream.readObject();
+                lRestaurant = (Integer) objectInputStream.readObject();
+            }catch (IOException e){
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Zapis koordynatów restauracji do pliku.
+     */
+    public static void saveRestaurant(){
+        File file = new File(pathNameRestaurant);
+        ObjectOutputStream outputStream;
+        try {
+            outputStream = new ObjectOutputStream(new FileOutputStream(file));
+            outputStream.writeObject(wRestaurant);
+            outputStream.writeObject(lRestaurant);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Dodanie pojazdu do listy pojazdów.
+     * @param vehicle pojazd wczytany z pliku
+     */
+    private static void addVehicleToList(Vehicle vehicle){
+        synchronized (guardian_deliverer) {
+            vehicles.addLast(vehicle);
+        }
+    }
+
+    /**
+     * Odczyt pojazdów z plików.
+     */
+    public static void readVehicle(){
+        File file = new File(pathNameVehicle);
+        if (file.exists()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true){
+                    Vehicle vehicle = (Vehicle) objectInputStream.readObject();
+                    addVehicleToList(vehicle);
+                }
+            }catch (IOException e) {
+
+                System.out.println("Koniec pliku pojazdów.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Zapis pojazdów do plików.
+     */
+    public static void saveVehicle(){
+        File file = new File(pathNameVehicle);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Vehicle x: vehicles){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private static void addOrderToOrderList(Order order){
+        synchronized (guardian_client){
+            orderLinkedList.addLast(order);
+        }
+    }
+
+    public static void readOrder(){
+        File file = new File(pathNameOrder);
+        if (file.exists()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true){
+                    Order order = (Order) objectInputStream.readObject();
+                    addOrderToOrderList(order);
+                }
+            }catch (IOException e) {
+                System.out.println("Koniec pliku zamówień.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Zapis zamówień do plików.
+     */
+    public static void saveOrder(){
+        File file = new File(pathNameOrder);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Order x: orderLinkedList){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Metoda zapisuje wszystkie dane do plików. Wywołuje odpowiednie metody serializacji.
+     */
+    public static void saveAll(){
+        saveClients();
+        saveDeliverer();
+        saveRestaurant();
+        saveVehicle();
+        saveOrder();
+    }
+
+    private static void delAllList(){
         synchronized (guardian_client) {
             for (Client x : clients_list) {
-                if (x.getAddress().equals(posX + ":" + posY)) {
-                    killVboxInfoChildren();
-                    addClientInfoToVbox(x);
-                    System.out.println("To klient.");
-                    break;
-                }
+                clients_list.remove(x);
             }
         }
         synchronized (guardian_deliverer) {
             for (Deliverer x : deliverers_list) {
-                if (x.getPositionX() == posX && x.getPositionY() == posY) {
-                    killVboxInfoChildren();
-                    addDelivererInfoToVbox(x);
-                    System.out.println("To dostawca.");
-                    break;
-                }
+                deliverers_list.remove(x);
             }
         }
+        synchronized (guardian_client){
+            for (Order x: orderLinkedList){
+                orderLinkedList.remove(x);
+            }
+        }
+        synchronized (guardian_deliverer){
+            for (Vehicle x: vehicles){
+                vehicles.remove(x);
+            }
+        }
+    }
+
+    public static void readAll(){
+        delAllList();
+        readRestaurant();
+        readVehicle();
+        readClients();
+        readDeliverer();
+        readOrder();
+    }
+
+    /**
+     * Metoda wywoływana automatycznie na koniec działania programu. Na kliknięcie przycisku X.
+     *
+     * @throws Exception musi być
+     */
+    @Override
+    public void stop() throws Exception {
+
+        timeStop = false;
+        clientCanWork = false;
+        delivererCanWork = false;
+        clearClientThreadListFromEndProcess();
+        System.out.println("Koniec");
+        super.stop();
+    }
+
+    private static void delFile(File file){
+        if (file.exists()){
+            file.delete();
+        }
+    }
+
+    public static void delAllFile(){
+        File file = new File(pathNameOrder);
+        file.delete();
+        file = new File(pathNameRestaurant);
+            file.delete();
+        file = new File(pathNameClient);
+            file.delete();
+        file = new File(pathNameDeliverer);
+            file.delete();
+        file = new File(pathNameVehicle);
+            file.delete();
     }
 
     //**********************************************************************************************
@@ -686,10 +1003,13 @@ public class Main extends Application {
                 }
             }
         }.start();
+
         readRestaurant();
         readVehicle();
         readClients();
         readDeliverer();
+        readOrder();
+
         primaryStage.show();
     }
 
@@ -697,217 +1017,6 @@ public class Main extends Application {
 //
 //        return gridPane;
 //    }
-
-    /**
-     * Metoda tworzy zestaw obiadowy.
-     */
-    private static void createDinnerKit() {
-        synchronized (guardian_DinnerKit) {
-            Random random = new Random(System.nanoTime());
-            int count_of_meal = random.nextInt(4) + 1;
-            Meal[] meals_in_DinnerKit = new Meal[count_of_meal];
-            for (int k = 0; k < count_of_meal; k++) {
-                try {
-                    sleep(1);
-                } catch (InterruptedException e) {
-                    System.out.println(e);
-                }
-                int number_of_meal = random.nextInt(meals_list.size());
-                meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
-            }
-            menu.addLast(new DinnerKit((byte) (menu.size() + 1), meals_in_DinnerKit));
-        }
-    }
-
-    /**
-     * Wczytuje klientów z pliku i dodaje ich do listy kientów, wraz z włączeniem im wątku.
-     */
-    private void readClients(){
-        File file = new File(pathNameClient);
-        if (file.exists()) {
-            try {
-                String mark;
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true) {
-                    mark =(String) objectInputStream.readObject();
-                    System.out.println(mark);
-                    if (mark.equals("Occasional")) {
-                        Occasional x = (Occasional) objectInputStream.readObject();
-                        addClientToList(x);
-                    } else if (mark.equals("Regular")) {
-                        Regular x = (Regular) objectInputStream.readObject();
-                        addClientToList(x);
-                    } else if (mark.equals("Corporate")){
-                        Corporate x = (Corporate) objectInputStream.readObject();
-                        addClientToList(x);
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println("Koniec pliku klientów.");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void readDeliverer(){
-        File file = new File(pathNameDeliverer);
-        if (file.exists()){
-            try{
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true){
-                    addDelivererToList(((Deliverer)objectInputStream.readObject()));
-                    System.out.println("wczytałem dostawce");
-                }
-            }catch (IOException e){
-                System.out.println("Koniec pliku dostawców.");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void saveDeliverer(){
-        File file = new File(pathNameDeliverer);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Deliverer x: deliverers_list){
-                objectOutputStream.writeObject(x);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Zapis listy klientów do pliku.
-     */
-    private void saveClients(){
-        File file = new File(pathNameClient);
-        ObjectOutputStream objectOutputStream;
-        try {
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Client x: clients_list){
-                String mark = "";
-                if (x instanceof Occasional){
-                    mark = "Occasional";
-                }else if (x instanceof Regular){
-                    mark = "Regular";
-                }else if (x instanceof Corporate){
-                    mark = "Corporate";
-                }
-                objectOutputStream.writeObject(mark);
-                if (mark.equals("Occasional")) {
-                    objectOutputStream.writeObject((Occasional)x);
-                } else if (mark.equals("Regular")) {
-                    objectOutputStream.writeObject((Regular)x);
-                } else if (mark.equals("Corporate")){
-                    objectOutputStream.writeObject((Corporate)x);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void readRestaurant(){
-        File file = new File(pathNameRestaurant);
-        if (file.exists()){
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                wRestaurant = (Integer) objectInputStream.readObject();
-                lRestaurant = (Integer) objectInputStream.readObject();
-            }catch (IOException e){
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void saveRestaurant(){
-        File file = new File(pathNameRestaurant);
-        ObjectOutputStream outputStream;
-        try {
-            outputStream = new ObjectOutputStream(new FileOutputStream(file));
-            outputStream.writeObject(wRestaurant);
-            outputStream.writeObject(lRestaurant);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    private void addVehicleToList(Vehicle vehicle){
-        synchronized (guardian_deliverer) {
-            vehicles.addLast(vehicle);
-        }
-    }
-
-    public void readVehicle(){
-        File file = new File(pathNameVehicle);
-        if (file.exists()){
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true){
-                    Vehicle vehicle = (Vehicle) objectInputStream.readObject();
-                    addVehicleToList(vehicle);
-                }
-            }catch (IOException e) {
-
-                System.out.println("Koniec pliku pojazdów.");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void saveVehicle(){
-        File file = new File(pathNameVehicle);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Vehicle x: vehicles){
-                objectOutputStream.writeObject(x);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void saveOrder(){
-        File file = new File(pathNameOrder);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Order x: orderLinkedList){
-                objectOutputStream.writeObject(x);
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Metoda wywoływana automatycznie na koniec działania programu. Na kliknięcie przycisku X.
-     *
-     * @throws Exception musi być
-     */
-    @Override
-    public void stop() throws Exception {
-
-        timeStop = false;
-        clientCanWork = false;
-        delivererCanWork = false;
-        clearClientThreadListFromEndProcess();
-        System.out.println("Koniec");
-        saveClients();
-        saveDeliverer();
-        saveRestaurant();
-        saveVehicle();
-        saveOrder();
-        super.stop();
-    }
 
     public static void main(String[] args) {
         launch(args);
