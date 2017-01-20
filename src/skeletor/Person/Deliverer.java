@@ -7,6 +7,7 @@ import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
 import skeletor.Transport.Vehicle;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -17,17 +18,21 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Deliverer extends Human implements Runnable {
+public class Deliverer extends Human implements Runnable, Serializable {
     private final long PESEL;
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
-    private Vehicle vehicle = null;
-    private final Object guardian;
-    private Order delivererOrder;
+    private transient Vehicle vehicle = null;
+    private transient Object guardian;
+    private transient Order delivererOrder;
     private int positionX;
     private int positionY;
     private boolean canExist = true;
+
+    public void setGuardian(Object guardian) {
+        this.guardian = guardian;
+    }
 
     @Override
     public void run() {
@@ -412,7 +417,6 @@ public class Deliverer extends Human implements Runnable {
         this.positionX = positionX;
         this.positionY = positionY;
     }
-
 
     public long getPESEL() {
         return PESEL;

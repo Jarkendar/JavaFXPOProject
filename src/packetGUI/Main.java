@@ -16,11 +16,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import skeletor.*;
-import skeletor.Food.Meal;
+import skeletor.Enums.E_Dodatki;
+import skeletor.Enums.E_KategoriaPosiłku;
+import skeletor.Enums.E_RodzajCiasta;
+import skeletor.Food.*;
 import skeletor.Person.*;
 import skeletor.Transport.Car;
 import skeletor.Transport.Vehicle;
 
+import java.io.*;
+import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -65,6 +70,11 @@ public class Main extends Application {
     private static volatile boolean delivererCanWork = true;
     private static volatile boolean timeStop = true;
 
+    //ścieżki dostępu
+    private final String pathNameClient = "ClientList.txt";
+    private final String pathNameDeliverer = "DelivererList.txt";
+    private final String pathNameOrder = "listaZamówień";
+
     public static LinkedList<Deliverer> getDeliverers_list() {
         return deliverers_list;
     }
@@ -81,6 +91,61 @@ public class Main extends Application {
         synchronized (guardian_meal) {
             randomGenerator.addRandomMeal(meals_list);
             createDinnerKit();
+        }
+    }
+
+    public static void addMealToMealList(String name, String price, String weight, String category
+            , String subcategory, String preparationTime, String[] components){
+        synchronized (guardian_meal){
+            BigDecimal priceB = new BigDecimal(price);
+            float weightF = Float.parseFloat(weight);
+            long preparationTimeI = Integer.parseInt(preparationTime);
+            Meal newMeal = null;
+            switch (category){
+                case "Pizza":{
+                    switch (subcategory){
+                        case "Margheritta":{
+                            newMeal = new Margheritta(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
+                            break;
+                        }
+                        case "Salami":{
+                            newMeal = new Salami(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
+                            break;
+                        }
+                        case "Hawaiian":{
+                            newMeal = new Hawaiian(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "Makaron":{
+                    switch (subcategory){
+                        case "Spaghetti":{
+                            newMeal = new Spaghetti(name,components,priceB,weightF,E_KategoriaPosiłku.makaron,preparationTimeI);
+                            break;
+                        }
+                        case "Lasagne":{
+                            newMeal = new Lasagne(name,components,priceB,weightF,E_KategoriaPosiłku.makaron,preparationTimeI);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "Deser":{
+                    switch (subcategory){
+                        case "Ciasto":{
+                            newMeal = new Cake(name,components,priceB,weightF,E_KategoriaPosiłku.deser,preparationTimeI, E_RodzajCiasta.Waniliowe);
+                            break;
+                        }
+                        case "Naleśniki":{
+                            newMeal = new Pancake(name,components,priceB,weightF,E_KategoriaPosiłku.deser, preparationTimeI, E_Dodatki.ser);
+                            break;
+                        }
+                    }
+                }
+            }
+            meals_list.addLast(newMeal);
         }
     }
 
@@ -234,6 +299,20 @@ public class Main extends Application {
     }
 
     /**
+     * Metoda dodaje dostawców do listy i włącza im wątek.
+     */
+    public static void addDelivererToList(Deliverer x) {
+        synchronized (guardian_deliverer) {
+            x.setGuardian(guardian_deliverer);
+            deliverers_list.addLast(x);//tworzenie dostawcy
+            threadsDeliverer.addLast(new Thread(deliverers_list.getLast()));//dodanie go do listy wątków dostawców
+            threadsDeliverer.getLast().setDaemon(true);
+            threadsDeliverer.getLast().start();//włączenie go
+            System.out.println(deliverers_list.size());
+        }
+    }
+
+    /**
      * Metoda usuwa klienta z listy, zsynchronizoawana obiektem guardian_client.
      */
     public static void delClientFromList() {
@@ -262,6 +341,14 @@ public class Main extends Application {
             threadsClient.getLast().start();//włączenie go
             System.out.println(clients_list.size());
         }
+    }
+
+    public static void addClientToList(Client x){
+        clients_list.addLast(x);
+        threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
+        threadsClient.getLast().setDaemon(true);
+        threadsClient.getLast().start();//włączenie go
+        System.out.println(clients_list.size());
     }
 
     public static LinkedList<Meal> getMeals_list() {
@@ -620,6 +707,91 @@ public class Main extends Application {
                 meals_in_DinnerKit[k] = meals_list.get(number_of_meal);
             }
             menu.addLast(new DinnerKit((byte) (menu.size() + 1), meals_in_DinnerKit));
+        }
+    }
+
+    private void readClients(){
+        File file = new File(pathNameClient);
+        if (file.exists()) {
+            try {
+                String mark;
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true) {
+                    mark =(String) objectInputStream.readObject();
+                    System.out.println(mark);
+                    if (mark.equals("Occasional")) {
+                        Occasional x = (Occasional) objectInputStream.readObject();
+                        addClientToList(x);
+                    } else if (mark.equals("Regular")) {
+                        Regular x = (Regular) objectInputStream.readObject();
+                        addClientToList(x);
+                    } else if (mark.equals("Corporate")){
+                        Corporate x = (Corporate) objectInputStream.readObject();
+                        addClientToList(x);
+                    }
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void readDeliverer(){
+        File file = new File(pathNameDeliverer);
+        if (file.exists()){
+            try{
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true){
+                    addDelivererToList(((Deliverer)objectInputStream.readObject()));
+                    System.out.println("wczytałem dostawce");
+                }
+            }catch (IOException | ClassNotFoundException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveDeliverer(){
+        File file = new File(pathNameDeliverer);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Deliverer x: deliverers_list){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Zapis listy klientów do pliku.
+     */
+    private void saveClients(){
+        File file = new File(pathNameClient);
+        ObjectOutputStream objectOutputStream;
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Client x: clients_list){
+                String mark = "";
+                if (x instanceof Occasional){
+                    mark = "Occasional";
+                }else if (x instanceof Regular){
+                    mark = "Regular";
+                }else if (x instanceof Corporate){
+                    mark = "Corporate";
+                }
+                objectOutputStream.writeObject(mark);
+                if (mark.equals("Occasional")) {
+                    objectOutputStream.writeObject((Occasional)x);
+                } else if (mark.equals("Regular")) {
+                    objectOutputStream.writeObject((Regular)x);
+                } else if (mark.equals("Corporate")){
+                    objectOutputStream.writeObject((Corporate)x);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

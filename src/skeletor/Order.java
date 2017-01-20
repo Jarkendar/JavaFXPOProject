@@ -1,11 +1,12 @@
 package skeletor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Order {
+public class Order implements Serializable{
     private int number;
     private String address;
     private long orderTime;

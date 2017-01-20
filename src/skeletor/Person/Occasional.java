@@ -7,18 +7,18 @@ import java.math.BigInteger;
  */
 public class Occasional extends Client {
 
-    /**
-     * Konstruktor klasy Occasional Client bez adresu email
-     * @param name
-     * @param surname
-     * @param code
-     * @param address
-     */
-    public Occasional(String name, String surname, int code,
-                      String address){
-        super(name, surname, code,
-                address);
-    }
+//    /**
+//     * Konstruktor klasy Occasional Client bez adresu email
+//     * @param name
+//     * @param surname
+//     * @param code
+//     * @param address
+//     */
+//    public Occasional(String name, String surname, int code,
+//                      String address){
+//        super(name, surname, code,
+//                address);
+//    }
 
     /**
      * Konstruktor klasy Occasional Client z adresem email

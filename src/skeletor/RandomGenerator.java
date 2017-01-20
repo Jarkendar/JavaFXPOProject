@@ -330,7 +330,7 @@ public class RandomGenerator {
         else uprawnienia = E_Uprawnienia.skuter;
 
         Deliverer deliverer = new Deliverer(name, surname, numberPESEL, hoursWork
-                , daysWork, uprawnienia, guardian, ControlPanel.getwRestaurant(), ControlPanel.getlRestaurant());
+                , daysWork, uprawnienia, guardian, Main.getwRestaurant(), Main.getlRestaurant());
 
         deliverers.addLast(deliverer);
 

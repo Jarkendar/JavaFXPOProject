@@ -5,6 +5,7 @@ import skeletor.ControlPanel;
 import skeletor.DinnerKit;
 import skeletor.Order;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.Random;
@@ -14,15 +15,15 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Client extends Human implements Runnable {
+public abstract class Client extends Human implements Runnable, Serializable {
 
-    private boolean canExist = true;
+    private transient boolean canExist = true;
     private int code;
     private int number_order;
     private long time_order;
     private String address;
     private String email = "";
-    private Order myOrder;
+    private transient Order myOrder;
 
     @Override
     public void run() {
