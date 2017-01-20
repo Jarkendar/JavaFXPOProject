@@ -1,5 +1,7 @@
 package packetGUI;
 
+import com.sun.org.apache.xpath.internal.operations.Or;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -76,6 +78,8 @@ public class Main extends Application {
     private final String pathNameOrder = "OrderList.txt";
     private final String pathNameMeal = "MealList.txt";
     private final String pathNameDinnerKit = "DinnerKitList.txt";
+    private final String pathNameRestaurant = "RestaurantList.txt";
+    private final String pathNameVehicle = "VehicleList.txt";
 
     public static LinkedList<Deliverer> getDeliverers_list() {
         return deliverers_list;
@@ -682,6 +686,8 @@ public class Main extends Application {
                 }
             }
         }.start();
+        readRestaurant();
+        readVehicle();
         readClients();
         readDeliverer();
         primaryStage.show();
@@ -736,7 +742,9 @@ public class Main extends Application {
                         addClientToList(x);
                     }
                 }
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (IOException e) {
+                System.out.println("Koniec pliku klientów.");
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -751,7 +759,9 @@ public class Main extends Application {
                     addDelivererToList(((Deliverer)objectInputStream.readObject()));
                     System.out.println("wczytałem dostawce");
                 }
-            }catch (IOException | ClassNotFoundException e){
+            }catch (IOException e){
+                System.out.println("Koniec pliku dostawców.");
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -801,7 +811,82 @@ public class Main extends Application {
         }
     }
 
+    public void readRestaurant(){
+        File file = new File(pathNameRestaurant);
+        if (file.exists()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                wRestaurant = (Integer) objectInputStream.readObject();
+                lRestaurant = (Integer) objectInputStream.readObject();
+            }catch (IOException e){
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    public void saveRestaurant(){
+        File file = new File(pathNameRestaurant);
+        ObjectOutputStream outputStream;
+        try {
+            outputStream = new ObjectOutputStream(new FileOutputStream(file));
+            outputStream.writeObject(wRestaurant);
+            outputStream.writeObject(lRestaurant);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void addVehicleToList(Vehicle vehicle){
+        synchronized (guardian_deliverer) {
+            vehicles.addLast(vehicle);
+        }
+    }
+
+    public void readVehicle(){
+        File file = new File(pathNameVehicle);
+        if (file.exists()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+                while (true){
+                    Vehicle vehicle = (Vehicle) objectInputStream.readObject();
+                    addVehicleToList(vehicle);
+                }
+            }catch (IOException e) {
+
+                System.out.println("Koniec pliku pojazdów.");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void saveVehicle(){
+        File file = new File(pathNameVehicle);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Vehicle x: vehicles){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void saveOrder(){
+        File file = new File(pathNameOrder);
+        ObjectOutputStream objectOutputStream;
+        try{
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Order x: orderLinkedList){
+                objectOutputStream.writeObject(x);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Metoda wywoływana automatycznie na koniec działania programu. Na kliknięcie przycisku X.
@@ -818,6 +903,9 @@ public class Main extends Application {
         System.out.println("Koniec");
         saveClients();
         saveDeliverer();
+        saveRestaurant();
+        saveVehicle();
+        saveOrder();
         super.stop();
     }
 

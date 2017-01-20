@@ -23,7 +23,7 @@ public class Deliverer extends Human implements Runnable {
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
-    private transient Vehicle vehicle = null;
+    private  Vehicle vehicle = null;
     private transient Object guardian;
     private transient Order delivererOrder;
     private int positionX;
