@@ -73,7 +73,9 @@ public class Main extends Application {
     //ścieżki dostępu
     private final String pathNameClient = "ClientList.txt";
     private final String pathNameDeliverer = "DelivererList.txt";
-    private final String pathNameOrder = "listaZamówień";
+    private final String pathNameOrder = "OrderList.txt";
+    private final String pathNameMeal = "MealList.txt";
+    private final String pathNameDinnerKit = "DinnerKitList.txt";
 
     public static LinkedList<Deliverer> getDeliverers_list() {
         return deliverers_list;
@@ -680,7 +682,8 @@ public class Main extends Application {
                 }
             }
         }.start();
-
+        readClients();
+        readDeliverer();
         primaryStage.show();
     }
 
@@ -710,6 +713,9 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Wczytuje klientów z pliku i dodaje ich do listy kientów, wraz z włączeniem im wątku.
+     */
     private void readClients(){
         File file = new File(pathNameClient);
         if (file.exists()) {
@@ -795,6 +801,8 @@ public class Main extends Application {
         }
     }
 
+
+
     /**
      * Metoda wywoływana automatycznie na koniec działania programu. Na kliknięcie przycisku X.
      *
@@ -808,6 +816,8 @@ public class Main extends Application {
         delivererCanWork = false;
         clearClientThreadListFromEndProcess();
         System.out.println("Koniec");
+        saveClients();
+        saveDeliverer();
         super.stop();
     }
 

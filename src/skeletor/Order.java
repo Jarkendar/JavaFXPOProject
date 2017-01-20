@@ -13,6 +13,9 @@ public class Order implements Serializable{
     private DinnerKit[] kit_list;
     private long readyTime;
 
+    public Order() {
+    }
+
     /**
      * Metoda ustawia czas gotowości zamówienia, na zasadzie wyciągnięcia czsu najpóźniejszego.
      */

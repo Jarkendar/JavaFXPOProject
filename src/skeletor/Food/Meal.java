@@ -2,18 +2,22 @@ package skeletor.Food;
 
 import skeletor.Enums.E_KategoriaPosiłku;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Meal {
+public abstract class Meal implements Serializable {
     private String name;
     private String[] components;
     private BigDecimal price;
     private float weight;
     private E_KategoriaPosiłku category;
     private long preparation_time;
+
+    public Meal() {
+    }
 
     /**
      * Konstruktor klasy Food.Meal

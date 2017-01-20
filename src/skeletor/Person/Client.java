@@ -15,15 +15,15 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Client extends Human implements Runnable, Serializable {
+public abstract class Client extends Human implements Runnable{
 
-    private transient boolean canExist = true;
+    private boolean canExist = true;
     private int code;
     private int number_order;
     private long time_order;
     private String address;
     private String email = "";
-    private transient Order myOrder;
+    private Order myOrder;
 
     @Override
     public void run() {
@@ -69,6 +69,8 @@ public abstract class Client extends Human implements Runnable, Serializable {
         System.out.println("Kończę działanie");
     }
 
+    public Client() {
+    }
 
     public boolean isCanExist() {
         return canExist;

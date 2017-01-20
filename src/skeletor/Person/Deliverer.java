@@ -18,8 +18,8 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Deliverer extends Human implements Runnable, Serializable {
-    private final long PESEL;
+public class Deliverer extends Human implements Runnable {
+    private long PESEL;
     private int[] work_hour;
     private E_Dni[] work_day;
     private E_Uprawnienia can_drive;
@@ -416,6 +416,9 @@ public class Deliverer extends Human implements Runnable, Serializable {
         this.guardian = guardian;
         this.positionX = positionX;
         this.positionY = positionY;
+    }
+
+    public Deliverer() {
     }
 
     public long getPESEL() {

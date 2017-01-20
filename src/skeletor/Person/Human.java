@@ -1,12 +1,17 @@
 package skeletor.Person;
 
+import java.io.Serializable;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Human {
+public abstract class Human implements Serializable{
 
     private String name;
     private String surname;
+
+    public Human() {
+    }
 
     /**
      * Konstruktor klasy Human

@@ -2,14 +2,18 @@ package skeletor;
 
 import skeletor.Food.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class DinnerKit {
+public class DinnerKit implements Serializable{
     private byte kit_number;
     private Meal[] meal_list;
+
+    public DinnerKit() {
+    }
 
     /**
      * Konstruktor klasy DinnerKit
