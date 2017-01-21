@@ -46,16 +46,18 @@ public abstract class Client extends Human implements Runnable{
             LinkedList<DinnerKit> tmpmenu = Main.getMenu();
 
             //tworzenie zamówienia
-            int countChoose = random.nextInt(3) + 1;
-            DinnerKit[] dinnerKits = new DinnerKit[countChoose];
-            for (int i = 0; i < countChoose; i++) {
-                int chooseKit = random.nextInt(tmpmenu.size());
-                dinnerKits[i] = tmpmenu.get(chooseKit);
+            if (myOrder == null) {
+                int countChoose = random.nextInt(3) + 1;
+                DinnerKit[] dinnerKits = new DinnerKit[countChoose];
+                for (int i = 0; i < countChoose; i++) {
+                    int chooseKit = random.nextInt(tmpmenu.size());
+                    dinnerKits[i] = tmpmenu.get(chooseKit);
+                }
+                Order order = new Order(Main.getOrderNumber(), address, System.currentTimeMillis(), dinnerKits);
+                Main.addOrderToList(order);//dodanie zamówienia do listy zamówień
+                System.out.println("Zamówiłem");
+                myOrder = order;
             }
-            Order order = new Order(Main.getOrderNumber(), address, System.currentTimeMillis(), dinnerKits);
-            Main.addOrderToList(order);//dodanie zamówienia do listy zamówień
-            System.out.println("Zamówiłem");
-            myOrder = order;
 
             //czekanie na dostarczenie zamówienia
             while (myOrder != null) {
@@ -136,6 +138,10 @@ public abstract class Client extends Human implements Runnable{
         this.code = code;
         this.address = address;
         this.email = email;
+    }
+
+    public void setMyOrder(Order myOrder) {
+        this.myOrder = myOrder;
     }
 
     public int getCode() {

@@ -304,6 +304,7 @@ public class Controller {
 
     public void restartClick(ActionEvent event) {
         Main.delAllFile();
+
         System.out.println("Usunąłem");
     }
 }

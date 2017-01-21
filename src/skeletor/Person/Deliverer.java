@@ -7,6 +7,8 @@ import skeletor.Transport.Car;
 import skeletor.Transport.Scooter;
 import skeletor.Transport.Vehicle;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;

@@ -768,6 +768,13 @@ public class Main extends Application {
                 while (true){
                     Order order = (Order) objectInputStream.readObject();
                     addOrderToOrderList(order);
+                    synchronized (guardian_client){
+                        for (Client x: clients_list){
+                            if (x.getAddress().equals(order.getAddress())){
+                                x.setMyOrder(order);
+                            }
+                        }
+                    }
                 }
             }catch (IOException e) {
                 System.out.println("Koniec pliku zamówień.");
@@ -797,11 +804,19 @@ public class Main extends Application {
      * Metoda zapisuje wszystkie dane do plików. Wywołuje odpowiednie metody serializacji.
      */
     public static void saveAll(){
-        saveClients();
-        saveDeliverer();
+        synchronized (guardian_client) {
+            saveClients();
+        }
+        synchronized (guardian_deliverer) {
+            saveDeliverer();
+        }
         saveRestaurant();
-        saveVehicle();
-        saveOrder();
+        synchronized (guardian_deliverer) {
+            saveVehicle();
+        }
+        synchronized (guardian_client) {
+            saveOrder();
+        }
     }
 
     private static void delAllList(){
@@ -1005,10 +1020,18 @@ public class Main extends Application {
         }.start();
 
         readRestaurant();
-        readVehicle();
-        readClients();
-        readDeliverer();
-        readOrder();
+        synchronized (guardian_deliverer) {
+            readVehicle();
+        }
+        synchronized (guardian_client) {
+            readClients();
+        }
+        synchronized (guardian_deliverer) {
+            readDeliverer();
+        }
+        synchronized (guardian_client) {
+            readOrder();
+        }
 
         primaryStage.show();
     }

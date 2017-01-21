@@ -76,8 +76,7 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </VBox>
-            <Button fx:id="saveButton" layoutX="960.0" layoutY="855.0" mnemonicParsing="false" onAction="#saveAllToFile" text="Zapisz" />
-            <Button fx:id="readButton" layoutX="883.0" layoutY="855.0" mnemonicParsing="false" onAction="#readAllFromFile" text="Wczytaj" />
+            <Button fx:id="saveButton" layoutX="888.0" layoutY="855.0" mnemonicParsing="false" onAction="#saveAllToFile" prefHeight="31.0" prefWidth="134.0" text="Zapisz" />
             <Button fx:id="restartButton" layoutX="885.0" layoutY="814.0" mnemonicParsing="false" onAction="#restartClick" prefHeight="31.0" prefWidth="140.0" text="Od nowa" />
           </children></AnchorPane>
    </children>

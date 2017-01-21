@@ -313,7 +313,7 @@ public class RandomGenerator {
      * @param deliverers - lista dostawców
      */
     public void addRandomDeliverer(LinkedList<Deliverer> deliverers, Object guardian) {
-        Random random = new Random(System.currentTimeMillis());
+        Random random = new Random(System.nanoTime());
 
         //dane ogólne dla dostawcy
         String name = randomStringName(random.nextInt(10) + 5);
@@ -664,7 +664,7 @@ public class RandomGenerator {
      * @return - losowy ciąg znaków
      */
     private String randomStringName(int lenght) {
-        Random random = new Random(System.currentTimeMillis());
+        Random random = new Random(System.nanoTime());
         String string = "";
         for (int i = 0; i < lenght; i++) {
             char sign = (char) (random.nextInt(57) + 65);

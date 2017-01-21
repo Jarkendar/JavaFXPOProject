@@ -6,6 +6,9 @@ import javafx.scene.paint.Paint;
 import packetGUI.Main;
 import skeletor.Person.Client;
 import skeletor.Person.Deliverer;
+import skeletor.Person.Occasional;
+import skeletor.Person.Regular;
+import skeletor.Transport.Car;
 
 import java.util.LinkedList;
 
@@ -60,7 +63,11 @@ public class Map {
                 mapGUI[posX][posY].setText("S");
                 mapGUI[posX][posY].setVisible(true);
                 mapGUI[posX][posY].setTextFill(Color.WHITE);
-                mapGUI[posX][posY].setStyle("-fx-background-color: #0000CC;");
+                if (x.getVehicle() instanceof Car) {
+                    mapGUI[posX][posY].setStyle("-fx-background-color: #000088;");
+                }else {
+                    mapGUI[posX][posY].setStyle("-fx-background-color: #0000EE;");
+                }
             }
         }
     }
@@ -96,7 +103,13 @@ public class Map {
             mapGUI[width][lenght].setText("K");
             mapGUI[width][lenght].setVisible(true);
             mapGUI[width][lenght].setTextFill(Color.WHITE);
-            mapGUI[width][lenght].setStyle("-fx-background-color: #00CC00;");
+            if (x instanceof Occasional) {
+                mapGUI[width][lenght].setStyle("-fx-background-color: #004400;");
+            }else if (x instanceof Regular){
+                mapGUI[width][lenght].setStyle("-fx-background-color: #009900;");
+            }else{
+                mapGUI[width][lenght].setStyle("-fx-background-color: #00EE00;");
+            }
         }
     }
 
