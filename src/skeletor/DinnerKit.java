@@ -2,32 +2,38 @@ package skeletor;
 
 import skeletor.Food.*;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class DinnerKit {
+public class DinnerKit implements Serializable{
     private byte kit_number;
     private Meal[] meal_list;
 
+    public DinnerKit() {
+    }
+
     /**
      * Konstruktor klasy DinnerKit
+     *
      * @param kit_number - numer zestawu
-     * @param meal_list - lista dań zestawu
+     * @param meal_list  - lista dań zestawu
      */
-    public DinnerKit(byte kit_number, Meal[] meal_list){
+    public DinnerKit(byte kit_number, Meal[] meal_list) {
         this.setKit_number(kit_number);
         this.setMeal_list(meal_list);
     }
 
     /**
      * Metoda oblicza cenę zestawu na podstawie cen posiłków
+     *
      * @return - zwraca cenę całego zestawu
      */
-    public BigDecimal calculateKitPrice(){
+    public BigDecimal calculateKitPrice() {
         BigDecimal price = new BigDecimal(0);
-        for (Meal x: this.meal_list) {
+        for (Meal x : this.meal_list) {
             price = price.add(x.getPrice());
         }
         return price;
@@ -35,11 +41,12 @@ public class DinnerKit {
 
     /**
      * Metoda oblicza wagę zestawu na podstawie wag posiłków
+     *
      * @return - zwraca wagę całego zestawu
      */
-    public float calculateKitWeight(){
+    public float calculateKitWeight() {
         float weight = 0;
-        for (Meal x: this.meal_list) {
+        for (Meal x : this.meal_list) {
             weight += x.getWeight();
         }
         return weight;
@@ -48,14 +55,15 @@ public class DinnerKit {
     /**
      * Metoda wyświetlająca nazwy posiłków z zestawu.
      */
-    public void displayNameMeals(){
-        for (Meal x: meal_list){
-            System.out.println(x.getName()+" ");
+    public void displayNameMeals() {
+        for (Meal x : meal_list) {
+            System.out.println(x.getName() + " ");
         }
     }
 
     /**
      * Getter
+     *
      * @return numer zestawu
      */
     public byte getKit_number() {

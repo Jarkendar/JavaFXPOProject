@@ -1,16 +1,20 @@
 package skeletor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
  * Created by Jarek on 2016-12-02.
  */
-public class Order {
+public class Order implements Serializable{
     private int number;
     private String address;
     private long orderTime;
     private DinnerKit[] kit_list;
     private long readyTime;
+
+    public Order() {
+    }
 
     /**
      * Metoda ustawia czas gotowości zamówienia, na zasadzie wyciągnięcia czsu najpóźniejszego.

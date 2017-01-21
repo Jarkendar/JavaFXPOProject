@@ -1,14 +1,19 @@
 package skeletor.Transport;
 
+import java.io.Serializable;
+
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Vehicle {
+public abstract class Vehicle implements Serializable {
     private float cargo;
     private float tank_max_value;
     private byte speed;
     private String registration_number;
     private float actualTankValue = 0;
+
+    public Vehicle() {
+    }
 
     /**
      * Konstruktor klasy Transport.Vehicle

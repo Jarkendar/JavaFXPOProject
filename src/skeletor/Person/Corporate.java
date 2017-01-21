@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class Corporate extends Client {
 
     private String message_address;
-    private final BigInteger account_number;
+    private BigInteger account_number;
     private long REGON;
 
 
@@ -32,27 +32,27 @@ public class Corporate extends Client {
         this.REGON = REGON;
     }
 
-    /**
-     * Konstruktor klasy Corporate Client z adresem email
-     * @param name
-     * @param surname
-     * @param code
-     * @param address
-     * @param email
-     * @param message_address - adres korespondencyjny
-     * @param account_string - string z 26 cyfrowym numerem konta
-     * @param REGON - 9 lub 14 cyfrowy kod REGON
-     */
-    public Corporate(String name, String surname, int code,
-                      String address, String email,
-                      String message_address, String account_string,
-                     long REGON){
-        super(name, surname, code,
-                address, email);
-        this.message_address = message_address;
-        this.account_number = new BigInteger(account_string);
-        this.REGON = REGON;
-    }
+//    /**
+//     * Konstruktor klasy Corporate Client z adresem email
+//     * @param name
+//     * @param surname
+//     * @param code
+//     * @param address
+//     * @param email
+//     * @param message_address - adres korespondencyjny
+//     * @param account_string - string z 26 cyfrowym numerem konta
+//     * @param REGON - 9 lub 14 cyfrowy kod REGON
+//     */
+//    public Corporate(String name, String surname, int code,
+//                      String address, String email,
+//                      String message_address, String account_string,
+//                     long REGON){
+//        super(name, surname, code,
+//                address, email);
+//        this.message_address = message_address;
+//        this.account_number = new BigInteger(account_string);
+//        this.REGON = REGON;
+//    }
 
     public String getMessage_address() {
         return message_address;

@@ -32,7 +32,6 @@ public class ControlPanel {
         return map;
     }
 
-
     public static LinkedList<Client> getClients_list() {
         return clients_list;
     }
@@ -40,7 +39,6 @@ public class ControlPanel {
     public static void setClients_list(LinkedList<Client> clients_list) {
         ControlPanel.clients_list = clients_list;
     }
-
 
     public static int getlRestaurant() {
         return lRestaurant;
@@ -132,8 +130,11 @@ public class ControlPanel {
         LinkedList<Meal> meals_list = new LinkedList<>();
 
         RandomGenerator randomGenerator = new RandomGenerator();
-//***********TWORZENIE POJAZDÓW RESTAURACJI***********
+//***********TWORZENIE POJAZDÓW RESTAURACJI I NAPEŁNIANIE ZBIORNIKA PALIWA***********
         randomGenerator.createVehicleForRestaurant(vehicles, getVehicleNumber());
+        for (Vehicle x : vehicles) {
+            x.fillTankVehicle();
+        }
 //**********TWORZENIE LISTY KLIENTÓW**********************
         for (int i = 0 ; i<5; i++){
             randomGenerator.addRandomClient(clients_list);

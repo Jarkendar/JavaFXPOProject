@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="center" hgap="10" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900" prefWidth="1200.0" vgap="10" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="packetGUI.Controller">
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints maxWidth="-Infinity" minWidth="-Infinity" prefWidth="900.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="900.0" />
+    </rowConstraints>
+    <children>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1200.0" GridPane.columnIndex="1">
+            <children>
+                <Button id="button_Add_Client" fx:id="button_Add_Client" layoutX="-126.0" layoutY="31.0" mnemonicParsing="false" onMouseClicked="#addClient" prefHeight="31.0" prefWidth="31.0" text="+" />
+                <Button id="button_Del_Client" fx:id="button_Del_Client" layoutX="-86.0" layoutY="31.0" mnemonicParsing="false" onMouseClicked="#delClient" prefHeight="31.0" prefWidth="31.0" text="-" />
+                <Button id="button_Add_Deliverer" fx:id="button_Add_Deliverer" layoutX="-126.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#addDeliverer" prefHeight="31.0" prefWidth="31.0" text="+" />
+                <Button id="button_Del_Deliverer" fx:id="button_Del_Deliverer" layoutX="-86.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#delDeliverer" prefHeight="31.0" prefWidth="31.0" text="-" />
+                <Label id="label_Client" fx:id="label_Client" layoutX="-39.0" layoutY="36.0" text="Klienci" />
+                <Label id="label_Deliverer" fx:id="label_Deliverer" layoutX="-39.0" layoutY="76.0" text="Dostawcy" />
+                <Button id="button_Add_Meal" fx:id="button_Add_Meal" layoutX="-126.0" layoutY="111.0" mnemonicParsing="false" onMouseClicked="#addMeal" text="+" />
+                <Label id="label_Meal" fx:id="label_Meal" layoutX="-39.0" layoutY="116.0" text="Posiłki" />
+                <Label id="label_Count_Meal" fx:id="label_Count_Meal" layoutX="34.0" layoutY="116.0" text="10" />
+                <Label id="label_Count_Client" fx:id="label_Count_Client" layoutX="34.0" layoutY="36.0" text="0" />
+                <Label id="label_Count_Deliverer" fx:id="label_Count_Deliverer" layoutX="34.0" layoutY="76.0" text="0" />
+                <GridPane fx:id="GridPaneMap" alignment="CENTER" gridLinesVisible="true" layoutX="120.0" layoutY="167.0" prefHeight="734.0" prefWidth="600.0" />
+                <AnchorPane layoutX="94.0" layoutY="25.0" prefHeight="124.0" prefWidth="928.0">
+                    <children>
+                        <Button id="button_Order" fx:id="CreateMealButton" layoutX="470.0" layoutY="79.0" mnemonicParsing="false" onAction="#clickOnCreateMealButton" onMouseClicked="#openOrderView" text="Stwórz posiłek" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="79.0" />
+                        <Label fx:id="NameMealLabel" layoutX="18.0" layoutY="14.0" text="Nazwa posiłku" />
+                        <Label fx:id="PriceLabel" layoutX="79.0" layoutY="52.0" text="Cena" />
+                        <TextField fx:id="MealNameTextField" layoutX="123.0" layoutY="9.0" />
+                        <TextField fx:id="PriceTextField" layoutX="123.0" layoutY="47.0" />
+                        <Label fx:id="WeightLabel" layoutX="76.0" layoutY="95.0" text="Waga" />
+                        <TextField fx:id="WeightTextField" layoutX="123.0" layoutY="90.0" />
+                        <Label fx:id="CategoryLabel" layoutX="406.0" layoutY="12.0" text="Kategoria" />
+                        <SplitMenuButton fx:id="CategoryMenu" layoutX="493.0" layoutY="7.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="134.0" text="Nie wybrano">
+                            <items>
+                                <MenuItem fx:id="PizzaMenuItem" mnemonicParsing="false" onAction="#clickCategoryString" text="Pizza" />
+                                <MenuItem fx:id="MakaronMenuItem" mnemonicParsing="false" onAction="#clickCategoryString" text="Makaron" />
+                                <MenuItem fx:id="DeserMenuItem" mnemonicParsing="false" onAction="#clickCategoryString" text="Deser" />
+                            </items>
+                        </SplitMenuButton>
+                        <Label fx:id="SubCategoryLabel" layoutX="381.0" layoutY="50.0" text="Podkategoria" />
+                        <SplitMenuButton fx:id="SubCategoryMenu" layoutX="493.0" layoutY="45.0" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="134.0" text="Nie wybrano" />
+                        <Label fx:id="TimeDurationLabel" layoutX="338.0" layoutY="93.0" text="Czas przygotowania" />
+                        <TextField fx:id="TimeDurationTextField" layoutX="493.0" layoutY="88.0" />
+                    </children>
+                </AnchorPane>
+                <Label fx:id="coordinate_Label" layoutX="120.0" layoutY="157.0" text="Nie kliknięto jeszcze w mapę.">
+                    <padding>
+                        <Insets left="5.0" top="30.0" />
+                    </padding>
+                </Label>
+                <VBox fx:id="VboxOnInfo" layoutX="-126.0" layoutY="219.0" prefHeight="421.0" prefWidth="235.0" spacing="10.0">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+                <VBox layoutX="836.0" layoutY="183.0" prefHeight="200.0" prefWidth="187.0" spacing="10.0">
+                    <children>
+                        <Label text="Składniki" />
+                        <RadioButton fx:id="RadioFlour" mnemonicParsing="false" text="Mąka" />
+                        <RadioButton fx:id="RadioWater" mnemonicParsing="false" text="Woda" />
+                        <RadioButton fx:id="RadioOil" mnemonicParsing="false" text="Olej" />
+                        <RadioButton fx:id="RadioMilk" mnemonicParsing="false" text="Mleko" />
+                        <RadioButton fx:id="RadioEggs" mnemonicParsing="false" text="Jajka" />
+                        <RadioButton fx:id="RadioCheese" mnemonicParsing="false" text="Ser" />
+                        <RadioButton fx:id="RadioSourCreme" mnemonicParsing="false" text="Śmietana" />
+                    </children>
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                    </padding>
+                </VBox>
+                <Button fx:id="saveButton" layoutX="888.0" layoutY="855.0" mnemonicParsing="false" onAction="#saveAllToFile" prefHeight="31.0" prefWidth="134.0" text="Zapisz" />
+                <Button fx:id="restartButton" layoutX="885.0" layoutY="814.0" mnemonicParsing="false" onAction="#restartClick" prefHeight="31.0" prefWidth="140.0" text="Od nowa" />
+            </children>
+        </AnchorPane>
+    </children>
+</GridPane>
