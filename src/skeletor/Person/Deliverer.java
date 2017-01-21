@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Random;
 
 import static java.lang.Thread.sleep;
 
@@ -143,6 +144,7 @@ public class Deliverer extends Human implements Runnable {
                         if ((addressX == positionX) && (addressY == positionY)) {
                             Main.getMap().addClientToMap(Main.getClients_list());
                             giveOrderToClient();
+                            delivererOrder = null;
                             System.out.println(PESEL + " pora wrócić.");
                         }
                     }//powrót do restauracji z pustym bagażem
@@ -194,7 +196,8 @@ public class Deliverer extends Human implements Runnable {
                     System.out.println(PESEL + " aktualny stan paliwa " + vehicle.getActualTankValue());
                 }
                 System.out.println(PESEL + " " + positionX + "; " + positionY);
-                waitTime(2000);//symulacja tur
+                Random random = new Random(System.currentTimeMillis());
+                waitTime(2000 + random.nextInt(50));//symulacja tur
             }
 //opuszczenie pojazdu przez dostawcę
             waitTime(1000);
@@ -420,6 +423,14 @@ public class Deliverer extends Human implements Runnable {
     }
 
     public Deliverer() {
+    }
+
+    public void setPositionX(int positionX) {
+        this.positionX = positionX;
+    }
+
+    public void setPositionY(int positionY) {
+        this.positionY = positionY;
     }
 
     public long getPESEL() {

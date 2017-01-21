@@ -99,51 +99,51 @@ public class Main extends Application {
     }
 
     public static void addMealToMealList(String name, String price, String weight, String category
-            , String subcategory, String preparationTime, String[] components){
-        synchronized (guardian_meal){
+            , String subcategory, String preparationTime, String[] components) {
+        synchronized (guardian_meal) {
             BigDecimal priceB = new BigDecimal(price);
             float weightF = Float.parseFloat(weight);
             long preparationTimeI = Integer.parseInt(preparationTime);
             Meal newMeal = null;
-            switch (category){
-                case "Pizza":{
-                    switch (subcategory){
-                        case "Margheritta":{
-                            newMeal = new Margheritta(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
+            switch (category) {
+                case "Pizza": {
+                    switch (subcategory) {
+                        case "Margheritta": {
+                            newMeal = new Margheritta(name, components, priceB, weightF, E_KategoriaPosiłku.pizza, preparationTimeI, false);
                             break;
                         }
-                        case "Salami":{
-                            newMeal = new Salami(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
+                        case "Salami": {
+                            newMeal = new Salami(name, components, priceB, weightF, E_KategoriaPosiłku.pizza, preparationTimeI, false);
                             break;
                         }
-                        case "Hawaiian":{
-                            newMeal = new Hawaiian(name,components,priceB,weightF, E_KategoriaPosiłku.pizza,preparationTimeI, false);
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case "Makaron":{
-                    switch (subcategory){
-                        case "Spaghetti":{
-                            newMeal = new Spaghetti(name,components,priceB,weightF,E_KategoriaPosiłku.makaron,preparationTimeI);
-                            break;
-                        }
-                        case "Lasagne":{
-                            newMeal = new Lasagne(name,components,priceB,weightF,E_KategoriaPosiłku.makaron,preparationTimeI);
+                        case "Hawaiian": {
+                            newMeal = new Hawaiian(name, components, priceB, weightF, E_KategoriaPosiłku.pizza, preparationTimeI, false);
                             break;
                         }
                     }
                     break;
                 }
-                case "Deser":{
-                    switch (subcategory){
-                        case "Ciasto":{
-                            newMeal = new Cake(name,components,priceB,weightF,E_KategoriaPosiłku.deser,preparationTimeI, E_RodzajCiasta.Waniliowe);
+                case "Makaron": {
+                    switch (subcategory) {
+                        case "Spaghetti": {
+                            newMeal = new Spaghetti(name, components, priceB, weightF, E_KategoriaPosiłku.makaron, preparationTimeI);
                             break;
                         }
-                        case "Naleśniki":{
-                            newMeal = new Pancake(name,components,priceB,weightF,E_KategoriaPosiłku.deser, preparationTimeI, E_Dodatki.ser);
+                        case "Lasagne": {
+                            newMeal = new Lasagne(name, components, priceB, weightF, E_KategoriaPosiłku.makaron, preparationTimeI);
+                            break;
+                        }
+                    }
+                    break;
+                }
+                case "Deser": {
+                    switch (subcategory) {
+                        case "Ciasto": {
+                            newMeal = new Cake(name, components, priceB, weightF, E_KategoriaPosiłku.deser, preparationTimeI, E_RodzajCiasta.Waniliowe);
+                            break;
+                        }
+                        case "Naleśniki": {
+                            newMeal = new Pancake(name, components, priceB, weightF, E_KategoriaPosiłku.deser, preparationTimeI, E_Dodatki.ser);
                             break;
                         }
                     }
@@ -309,6 +309,8 @@ public class Main extends Application {
         synchronized (guardian_deliverer) {
             x.setGuardian(guardian_deliverer);
             deliverers_list.addLast(x);//tworzenie dostawcy
+            deliverers_list.getLast().setPositionX(wRestaurant);
+            deliverers_list.getLast().setPositionY(lRestaurant);
             threadsDeliverer.addLast(new Thread(deliverers_list.getLast()));//dodanie go do listy wątków dostawców
             threadsDeliverer.getLast().setDaemon(true);
             threadsDeliverer.getLast().start();//włączenie go
@@ -347,7 +349,7 @@ public class Main extends Application {
         }
     }
 
-    public static void addClientToList(Client x){
+    public static void addClientToList(Client x) {
         clients_list.addLast(x);
         threadsClient.addLast(new Thread(clients_list.getLast()));//dodanie go do listy wątków klientów
         threadsClient.getLast().setDaemon(true);
@@ -505,9 +507,9 @@ public class Main extends Application {
         }
         Label vehicleType;
         if (deliverer.getVehicle() instanceof Car) {
-            vehicleType = new Label("Jadę samochodem");
+            vehicleType = new Label("Jadę samochodem "+ deliverer.getVehicle().getRegistration_number());
         } else {
-            vehicleType = new Label("Jadę skuterem");
+            vehicleType = new Label("Jadę skuterem "+ deliverer.getVehicle().getRegistration_number());
         }
         containerOnInfo.getChildren().addAll(new Label("DOSTAWCA"), new Label("PESEL " + deliverer.getPESEL())
                 , new Label("Imię " + deliverer.getName()), new Label("Nazwisko " + deliverer.getSurname())
@@ -525,7 +527,8 @@ public class Main extends Application {
         String[] tmp = buttonCoordinate.split(",");
         int posX = Integer.parseInt(tmp[0]);
         int posY = Integer.parseInt(tmp[1]);
-        Mark :while (true) {
+        Mark:
+        while (true) {
             if (posX == wRestaurant && posY == lRestaurant) {
                 killVboxInfoChildren();
                 addRestaurantInfoToVbox();
@@ -579,14 +582,14 @@ public class Main extends Application {
     /**
      * Wczytuje klientów z pliku i dodaje ich do listy kientów, wraz z włączeniem im wątku.
      */
-    private static void readClients(){
+    private static void readClients() {
         File file = new File(pathNameClient);
         if (file.exists()) {
             try {
                 String mark;
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
                 while (true) {
-                    mark =(String) objectInputStream.readObject();
+                    mark = (String) objectInputStream.readObject();
                     System.out.println(mark);
                     if (mark.equals("Occasional")) {
                         Occasional x = (Occasional) objectInputStream.readObject();
@@ -594,7 +597,7 @@ public class Main extends Application {
                     } else if (mark.equals("Regular")) {
                         Regular x = (Regular) objectInputStream.readObject();
                         addClientToList(x);
-                    } else if (mark.equals("Corporate")){
+                    } else if (mark.equals("Corporate")) {
                         Corporate x = (Corporate) objectInputStream.readObject();
                         addClientToList(x);
                     }
@@ -603,6 +606,8 @@ public class Main extends Application {
                 System.out.println("Koniec pliku klientów.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                file = null;
             }
         }
     }
@@ -610,19 +615,28 @@ public class Main extends Application {
     /**
      * Odczyt dostawców z pliku.
      */
-    private static void readDeliverer(){
+    private static void readDeliverer() {
         File file = new File(pathNameDeliverer);
-        if (file.exists()){
-            try{
+        if (file.exists()) {
+            try {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true){
-                    addDelivererToList(((Deliverer)objectInputStream.readObject()));
-                    System.out.println("wczytałem dostawce");
+                while (true) {
+                    synchronized (guardian_deliverer) {
+                        addDelivererToList(((Deliverer) objectInputStream.readObject()));
+                        System.out.println("wczytałem dostawce");
+                    }
+                    try{
+                        sleep(50);
+                    }catch (InterruptedException e){
+                        System.out.println("Błąd czekania");
+                    }
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 System.out.println("Koniec pliku dostawców.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                file = null;
             }
         }
     }
@@ -630,64 +644,68 @@ public class Main extends Application {
     /**
      * Zapis dostawców do pliku.
      */
-    private static void saveDeliverer(){
+    private static void saveDeliverer() {
         File file = new File(pathNameDeliverer);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Deliverer x: deliverers_list){
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Deliverer x : deliverers_list) {
                 objectOutputStream.writeObject(x);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            file = null;
         }
     }
 
     /**
      * Zapis listy klientów do pliku.
      */
-    private static void saveClients(){
+    private static void saveClients() {
         File file = new File(pathNameClient);
-        ObjectOutputStream objectOutputStream;
         try {
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Client x: clients_list){
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Client x : clients_list) {
                 String mark = "";
-                if (x instanceof Occasional){
+                if (x instanceof Occasional) {
                     mark = "Occasional";
-                }else if (x instanceof Regular){
+                } else if (x instanceof Regular) {
                     mark = "Regular";
-                }else if (x instanceof Corporate){
+                } else if (x instanceof Corporate) {
                     mark = "Corporate";
                 }
                 objectOutputStream.writeObject(mark);
                 if (mark.equals("Occasional")) {
-                    objectOutputStream.writeObject((Occasional)x);
+                    objectOutputStream.writeObject((Occasional) x);
                 } else if (mark.equals("Regular")) {
-                    objectOutputStream.writeObject((Regular)x);
-                } else if (mark.equals("Corporate")){
-                    objectOutputStream.writeObject((Corporate)x);
+                    objectOutputStream.writeObject((Regular) x);
+                } else if (mark.equals("Corporate")) {
+                    objectOutputStream.writeObject((Corporate) x);
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            file = null;
         }
     }
 
     /**
      * Odczyt koordynatów restauracji z pliku.
      */
-    public static void readRestaurant(){
+    public static void readRestaurant() {
         File file = new File(pathNameRestaurant);
-        if (file.exists()){
+        if (file.exists()) {
             try {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
                 wRestaurant = (Integer) objectInputStream.readObject();
                 lRestaurant = (Integer) objectInputStream.readObject();
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                file = null;
             }
         }
     }
@@ -695,23 +713,25 @@ public class Main extends Application {
     /**
      * Zapis koordynatów restauracji do pliku.
      */
-    public static void saveRestaurant(){
+    public static void saveRestaurant() {
         File file = new File(pathNameRestaurant);
-        ObjectOutputStream outputStream;
         try {
-            outputStream = new ObjectOutputStream(new FileOutputStream(file));
+            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
             outputStream.writeObject(wRestaurant);
             outputStream.writeObject(lRestaurant);
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            file = null;
         }
     }
 
     /**
      * Dodanie pojazdu do listy pojazdów.
+     *
      * @param vehicle pojazd wczytany z pliku
      */
-    private static void addVehicleToList(Vehicle vehicle){
+    private static void addVehicleToList(Vehicle vehicle) {
         synchronized (guardian_deliverer) {
             vehicles.addLast(vehicle);
         }
@@ -720,20 +740,22 @@ public class Main extends Application {
     /**
      * Odczyt pojazdów z plików.
      */
-    public static void readVehicle(){
+    public static void readVehicle() {
         File file = new File(pathNameVehicle);
-        if (file.exists()){
+        if (file.exists()) {
             try {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true){
+                while (true) {
                     Vehicle vehicle = (Vehicle) objectInputStream.readObject();
                     addVehicleToList(vehicle);
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
 
                 System.out.println("Koniec pliku pojazdów.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                file = null;
             }
         }
     }
@@ -741,45 +763,55 @@ public class Main extends Application {
     /**
      * Zapis pojazdów do plików.
      */
-    public static void saveVehicle(){
+    public static void saveVehicle() {
         File file = new File(pathNameVehicle);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Vehicle x: vehicles){
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Vehicle x : vehicles) {
                 objectOutputStream.writeObject(x);
             }
-        }catch (IOException e){
+            synchronized (guardian_deliverer) {
+                for (Deliverer x : deliverers_list) {
+                    if (x.getVehicle() != null) {
+                        objectOutputStream.writeObject(x.getVehicle());
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            file = null;
         }
     }
 
-    private static void addOrderToOrderList(Order order){
-        synchronized (guardian_client){
+    private static void addOrderToOrderList(Order order) {
+        synchronized (guardian_client) {
             orderLinkedList.addLast(order);
         }
     }
 
-    public static void readOrder(){
+    public static void readOrder() {
         File file = new File(pathNameOrder);
-        if (file.exists()){
+        if (file.exists()) {
             try {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
-                while (true){
+                while (true) {
                     Order order = (Order) objectInputStream.readObject();
                     addOrderToOrderList(order);
-                    synchronized (guardian_client){
-                        for (Client x: clients_list){
-                            if (x.getAddress().equals(order.getAddress())){
+                    synchronized (guardian_client) {
+                        for (Client x : clients_list) {
+                            if (x.getAddress().equals(order.getAddress())) {
                                 x.setMyOrder(order);
                             }
                         }
                     }
                 }
-            }catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("Koniec pliku zamówień.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+            }finally {
+                file = null;
             }
         }
     }
@@ -787,23 +819,32 @@ public class Main extends Application {
     /**
      * Zapis zamówień do plików.
      */
-    public static void saveOrder(){
+    public static void saveOrder() {
         File file = new File(pathNameOrder);
-        ObjectOutputStream objectOutputStream;
-        try{
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
-            for (Order x: orderLinkedList){
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            for (Order x : orderLinkedList) {
                 objectOutputStream.writeObject(x);
             }
-        }catch (IOException e){
+            synchronized (guardian_deliverer) {
+                for (Deliverer x : deliverers_list) {
+                    if (x.getDelivererOrder() != null) {
+                        objectOutputStream.writeObject(x.getDelivererOrder());
+                    }
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            file = null;
         }
+
     }
 
     /**
      * Metoda zapisuje wszystkie dane do plików. Wywołuje odpowiednie metody serializacji.
      */
-    public static void saveAll(){
+    public static void saveAll() {
         synchronized (guardian_client) {
             saveClients();
         }
@@ -819,7 +860,7 @@ public class Main extends Application {
         }
     }
 
-    private static void delAllList(){
+    private static void delAllList() {
         synchronized (guardian_client) {
             for (Client x : clients_list) {
                 clients_list.remove(x);
@@ -830,19 +871,19 @@ public class Main extends Application {
                 deliverers_list.remove(x);
             }
         }
-        synchronized (guardian_client){
-            for (Order x: orderLinkedList){
+        synchronized (guardian_client) {
+            for (Order x : orderLinkedList) {
                 orderLinkedList.remove(x);
             }
         }
-        synchronized (guardian_deliverer){
-            for (Vehicle x: vehicles){
+        synchronized (guardian_deliverer) {
+            for (Vehicle x : vehicles) {
                 vehicles.remove(x);
             }
         }
     }
 
-    public static void readAll(){
+    public static void readAll() {
         delAllList();
         readRestaurant();
         readVehicle();
@@ -867,23 +908,28 @@ public class Main extends Application {
         super.stop();
     }
 
-    private static void delFile(File file){
-        if (file.exists()){
+    private static void delFile(File file) {
+        if (file.exists()) {
             file.delete();
         }
     }
 
-    public static void delAllFile(){
+    public static void delAllFile() {
         File file = new File(pathNameOrder);
         file.delete();
-        file = new File(pathNameRestaurant);
-            file.delete();
-        file = new File(pathNameClient);
-            file.delete();
-        file = new File(pathNameDeliverer);
-            file.delete();
-        file = new File(pathNameVehicle);
-            file.delete();
+        file = null;
+        File file2 = new File(pathNameRestaurant);
+        file2.delete();
+        file2 = null;
+        File file3 = new File(pathNameClient);
+        file3.delete();
+        file3 = null;
+        File file4 = new File(pathNameDeliverer);
+        file4.delete();
+        file4 = null;
+        File file5 = new File(pathNameVehicle);
+        file5.delete();
+        file5 = null;
     }
 
     //**********************************************************************************************
@@ -1018,6 +1064,7 @@ public class Main extends Application {
                 }
             }
         }.start();
+        primaryStage.show();
 
         readRestaurant();
         synchronized (guardian_deliverer) {
@@ -1026,14 +1073,12 @@ public class Main extends Application {
         synchronized (guardian_client) {
             readClients();
         }
-        synchronized (guardian_deliverer) {
-            readDeliverer();
-        }
         synchronized (guardian_client) {
             readOrder();
         }
+        readDeliverer();
 
-        primaryStage.show();
+
     }
 
 //    public static GridPane getGridPaneMap (FXMLLoader loader) throws IOException{
