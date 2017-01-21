@@ -175,12 +175,12 @@ public class Controller {
         text = text.trim();
         char[] tmp = text.toCharArray();
         for (int i = 0; i < tmp.length; i++) {
-            if (((int)tmp[i] == 32) && i > 0 && i < tmp.length-1){
+            if (((int) tmp[i] == 32) && i > 0 && i < tmp.length - 1) {
 
-            }else if (!((((int) tmp[i]) >= 65 && ((int) tmp[i]) <= 90) || (((int) tmp[i]) >= 97 && ((int) tmp[i]) <= 122)
-                    || tmp[i] == 'ą' || tmp[i] == 'ę'|| tmp[i] == 'ó'|| tmp[i] == 'ś'|| tmp[i] == 'ł'|| tmp[i] == 'ż'
-                    || tmp[i] == 'ź'|| tmp[i] == 'ć' || tmp[i] == 'ń'|| tmp[i] == 'Ą'|| tmp[i] == 'Ę'|| tmp[i] == 'Ó'
-                    || tmp[i] == 'Ś'|| tmp[i] == 'Ł'|| tmp[i] == 'Ż'|| tmp[i] == 'Ź'|| tmp[i] == 'Ć'|| tmp[i] == 'Ń')) {
+            } else if (!((((int) tmp[i]) >= 65 && ((int) tmp[i]) <= 90) || (((int) tmp[i]) >= 97 && ((int) tmp[i]) <= 122)
+                    || tmp[i] == 'ą' || tmp[i] == 'ę' || tmp[i] == 'ó' || tmp[i] == 'ś' || tmp[i] == 'ł' || tmp[i] == 'ż'
+                    || tmp[i] == 'ź' || tmp[i] == 'ć' || tmp[i] == 'ń' || tmp[i] == 'Ą' || tmp[i] == 'Ę' || tmp[i] == 'Ó'
+                    || tmp[i] == 'Ś' || tmp[i] == 'Ł' || tmp[i] == 'Ż' || tmp[i] == 'Ź' || tmp[i] == 'Ć' || tmp[i] == 'Ń')) {
                 return false;
             }
         }
@@ -237,39 +237,39 @@ public class Controller {
             TimeDurationTextField.setText("Błąd");
             check = false;
         }
-        if(CategoryMenu.getText().equals("Nie wybrano") || SubCategoryMenu.getText().equals("Nie wybrano")){
+        if (CategoryMenu.getText().equals("Nie wybrano") || SubCategoryMenu.getText().equals("Nie wybrano")) {
             check = false;
         }
         LinkedList<String> components = new LinkedList<>();
-        if (RadioCheese.isSelected()){
+        if (RadioCheese.isSelected()) {
             components.addLast(RadioCheese.getText());
         }
-        if (RadioEggs.isSelected()){
+        if (RadioEggs.isSelected()) {
             components.addLast(RadioEggs.getText());
         }
-        if (RadioFlour.isSelected()){
+        if (RadioFlour.isSelected()) {
             components.addLast(RadioFlour.getText());
         }
-        if (RadioMilk.isSelected()){
+        if (RadioMilk.isSelected()) {
             components.addLast(RadioMilk.getText());
         }
-        if (RadioOil.isSelected()){
+        if (RadioOil.isSelected()) {
             components.addLast(RadioOil.getText());
         }
-        if (RadioSourCreme.isSelected()){
+        if (RadioSourCreme.isSelected()) {
             components.addLast(RadioSourCreme.getText());
         }
-        if (RadioWater.isSelected()){
+        if (RadioWater.isSelected()) {
             components.addLast(RadioWater.getText());
         }
         if (!(RadioWater.isSelected() || RadioSourCreme.isSelected() || RadioEggs.isSelected()
-                || RadioCheese.isSelected() || RadioOil.isSelected() || RadioFlour.isSelected() || RadioMilk.isSelected())){
+                || RadioCheese.isSelected() || RadioOil.isSelected() || RadioFlour.isSelected() || RadioMilk.isSelected())) {
             check = false;
         }
 
 
-        if (check){
-            Main.addMealToMealList(mealName,price,weight,CategoryMenu.getText(),SubCategoryMenu.getText(),preparatioTime,components.toArray(new String[0]));
+        if (check) {
+            Main.addMealToMealList(mealName, price, weight, CategoryMenu.getText(), SubCategoryMenu.getText(), preparatioTime, components.toArray(new String[0]));
             System.out.println("Dodałem nowy posiłek.");
             RadioMilk.setSelected(false);
             RadioWater.setSelected(false);
@@ -283,9 +283,9 @@ public class Controller {
             WeightTextField.setText("");
             TimeDurationTextField.setText("");
             CategoryMenu.setText("Nie wybrano");
-            SubCategoryMenu.getItems().remove(0,SubCategoryMenu.getItems().size());
+            SubCategoryMenu.getItems().remove(0, SubCategoryMenu.getItems().size());
             SubCategoryMenu.setText("Nie wybrano");
-        }else {
+        } else {
             System.out.println("Błędne wypełnienie pola.");
         }
         label_Count_Meal.setText(Integer.toString(Main.getMeals_list().size()));
@@ -298,7 +298,7 @@ public class Controller {
     }
 
     public void readAllFromFile(ActionEvent event) {
-  //      Main.readAll();
+        //      Main.readAll();
         System.out.println("Wczytano");
     }
 

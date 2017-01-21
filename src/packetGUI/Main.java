@@ -507,9 +507,9 @@ public class Main extends Application {
         }
         Label vehicleType;
         if (deliverer.getVehicle() instanceof Car) {
-            vehicleType = new Label("Jadę samochodem "+ deliverer.getVehicle().getRegistration_number());
+            vehicleType = new Label("Jadę samochodem " + deliverer.getVehicle().getRegistration_number());
         } else {
-            vehicleType = new Label("Jadę skuterem "+ deliverer.getVehicle().getRegistration_number());
+            vehicleType = new Label("Jadę skuterem " + deliverer.getVehicle().getRegistration_number());
         }
         containerOnInfo.getChildren().addAll(new Label("DOSTAWCA"), new Label("PESEL " + deliverer.getPESEL())
                 , new Label("Imię " + deliverer.getName()), new Label("Nazwisko " + deliverer.getSurname())
@@ -606,10 +606,11 @@ public class Main extends Application {
                 System.out.println("Koniec pliku klientów.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 file = null;
             }
         }
+        file = null;
     }
 
     /**
@@ -625,9 +626,9 @@ public class Main extends Application {
                         addDelivererToList(((Deliverer) objectInputStream.readObject()));
                         System.out.println("wczytałem dostawce");
                     }
-                    try{
+                    try {
                         sleep(50);
-                    }catch (InterruptedException e){
+                    } catch (InterruptedException e) {
                         System.out.println("Błąd czekania");
                     }
                 }
@@ -635,10 +636,11 @@ public class Main extends Application {
                 System.out.println("Koniec pliku dostawców.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 file = null;
             }
         }
+        file = null;
     }
 
     /**
@@ -651,9 +653,10 @@ public class Main extends Application {
             for (Deliverer x : deliverers_list) {
                 objectOutputStream.writeObject(x);
             }
+            objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             file = null;
         }
     }
@@ -683,9 +686,10 @@ public class Main extends Application {
                     objectOutputStream.writeObject((Corporate) x);
                 }
             }
+            objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             file = null;
         }
     }
@@ -700,14 +704,16 @@ public class Main extends Application {
                 ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
                 wRestaurant = (Integer) objectInputStream.readObject();
                 lRestaurant = (Integer) objectInputStream.readObject();
+                objectInputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 file = null;
             }
         }
+        file = null;
     }
 
     /**
@@ -719,9 +725,10 @@ public class Main extends Application {
             ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file));
             outputStream.writeObject(wRestaurant);
             outputStream.writeObject(lRestaurant);
+            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             file = null;
         }
     }
@@ -754,10 +761,11 @@ public class Main extends Application {
                 System.out.println("Koniec pliku pojazdów.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 file = null;
             }
         }
+        file = null;
     }
 
     /**
@@ -777,9 +785,10 @@ public class Main extends Application {
                     }
                 }
             }
+            objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             file = null;
         }
     }
@@ -810,10 +819,12 @@ public class Main extends Application {
                 System.out.println("Koniec pliku zamówień.");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
+
                 file = null;
             }
         }
+        file = null;
     }
 
     /**
@@ -826,6 +837,7 @@ public class Main extends Application {
             for (Order x : orderLinkedList) {
                 objectOutputStream.writeObject(x);
             }
+            objectOutputStream.close();
             synchronized (guardian_deliverer) {
                 for (Deliverer x : deliverers_list) {
                     if (x.getDelivererOrder() != null) {
@@ -835,7 +847,7 @@ public class Main extends Application {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             file = null;
         }
 
@@ -1065,7 +1077,13 @@ public class Main extends Application {
             }
         }.start();
         primaryStage.show();
+        read();
 
+
+
+    }
+
+    private static void read(){
         readRestaurant();
         synchronized (guardian_deliverer) {
             readVehicle();
@@ -1077,8 +1095,6 @@ public class Main extends Application {
             readOrder();
         }
         readDeliverer();
-
-
     }
 
 //    public static GridPane getGridPaneMap (FXMLLoader loader) throws IOException{

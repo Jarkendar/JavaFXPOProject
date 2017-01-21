@@ -15,7 +15,7 @@ import static java.lang.Thread.sleep;
 /**
  * Created by Jarek on 2016-12-02.
  */
-public abstract class Client extends Human implements Runnable{
+public abstract class Client extends Human implements Runnable {
 
     private boolean canExist = true;
     private int code;

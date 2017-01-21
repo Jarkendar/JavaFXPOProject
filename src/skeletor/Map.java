@@ -65,7 +65,7 @@ public class Map {
                 mapGUI[posX][posY].setTextFill(Color.WHITE);
                 if (x.getVehicle() instanceof Car) {
                     mapGUI[posX][posY].setStyle("-fx-background-color: #000088;");
-                }else {
+                } else {
                     mapGUI[posX][posY].setStyle("-fx-background-color: #0000EE;");
                 }
             }
@@ -105,9 +105,9 @@ public class Map {
             mapGUI[width][lenght].setTextFill(Color.WHITE);
             if (x instanceof Occasional) {
                 mapGUI[width][lenght].setStyle("-fx-background-color: #004400;");
-            }else if (x instanceof Regular){
+            } else if (x instanceof Regular) {
                 mapGUI[width][lenght].setStyle("-fx-background-color: #009900;");
-            }else{
+            } else {
                 mapGUI[width][lenght].setStyle("-fx-background-color: #00EE00;");
             }
         }
